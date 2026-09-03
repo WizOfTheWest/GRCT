@@ -1,0 +1,1483 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Great Garden Route Trek · Garden Route Children's Trust</title>
+<meta name="description" content="Live progress of the Garden Route Children's Trust 20th anniversary Great Garden Route Trek — 1,000 km from Wellington to Port Elizabeth, lit up kilometre by kilometre by our supporters.">
+<meta name="theme-color" content="#1f8454">
+<meta property="og:title" content="The Great Garden Route Trek">
+<meta property="og:description" content="Every kilometre walked, run, cycled or swum lights up the road from Wellington to Port Elizabeth.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Ccircle cx='24' cy='24' r='22' fill='%231f8454'/%3E%3Ccircle cx='24' cy='24' r='7' fill='%23fbb040'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/motion@13.2.0/dist/motion.js"></script>
+<style>
+/* ============================================================================
+   Design tokens — the Bklit UI palette (oklch, radius 0, chart/legend
+   semantics), with the --chart-* slots swapped for GRCT's brand colours.
+   ========================================================================= */
+:root{
+  --background: oklch(0.969998 0.0000246537 112.908);
+  --foreground: oklch(0.147999 0.0039982 228.752);
+  --card: oklch(0.999998 0.0000253939 112.713);
+  --popover: oklch(0.999998 0.0000253939 112.713);
+  --popover-foreground: oklch(0.147999 0.0039982 228.752);
+  --muted: oklch(0.937998 0.0000237458 112.896);
+  --muted-foreground: oklch(0.564 0 78.958);
+  --border: oklch(0.919998 0.0000232344 112.552);
+  --radius: 0px;
+
+  --chart-label: oklch(0.45 0.01 260);
+  --chart-tooltip-background: var(--popover);
+  --chart-tooltip-foreground: var(--popover-foreground);
+  --chart-tooltip-muted: var(--muted-foreground);
+
+  --legend: oklch(1 0 0);
+  --legend-muted: oklch(0.967 0.001 286.375);
+  --legend-muted-foreground: oklch(0.552 0.016 285.938);
+  --legend-track: oklch(0.92 0.004 286.32);
+
+  /* ---- GRCT brand, sampled from grct.org.uk ---- */
+  --grct-green:        #2bb673;
+  --grct-green-deep:   #1f8454;
+  --grct-green-ink:    #14603c;
+  --grct-orange:       #fbb040;
+  --grct-orange-deep:  #e07b1f;
+
+  --chart-1: var(--grct-green-deep);
+  --chart-2: var(--grct-green);
+  --chart-3: var(--grct-orange);
+  --chart-4: var(--grct-orange-deep);
+  --chart-5: oklch(0.75 0.02 240);
+
+  --map-bg:    #dfe8ef;
+  --dot-dim:   #94a3ae;
+  --dot-ring:  #ffffff;
+  --tile-filter: saturate(0.06) brightness(1.07) contrast(0.86);
+
+  --font-sans: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --font-head: "Montserrat", var(--font-sans);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --background: oklch(0.14 0.0047 263.79);
+  --foreground: oklch(0.987 0.002 197.1);
+  --card: oklch(0.17 0.0065 271.01);
+  --popover: oklch(0.21 0.0058 285.9);
+  --popover-foreground: oklch(0.987 0.002 197.1);
+  --muted: oklch(0.30 0.0182 276.35);
+  --muted-foreground: oklch(0.62 0.0218 270.07);
+  --border: oklch(0.56 0.0195 267.65 / 0.2);
+  --chart-label: oklch(0.75 0.01 260);
+  --legend: oklch(0.21 0.006 285.885);
+  --legend-muted: oklch(0.274 0.006 286.033);
+  --legend-muted-foreground: oklch(0.705 0.015 286.067);
+  --legend-track: oklch(0.274 0.006 286.033);
+  --map-bg:   #10161d;
+  --dot-dim:  #5b6b7a;
+  --dot-ring: #0f1519;
+  --tile-filter: invert(1) hue-rotate(180deg) saturate(0.10) brightness(0.86) contrast(1.05);
+}}
+:root[data-theme="dark"]{
+  --background: oklch(0.14 0.0047 263.79);
+  --foreground: oklch(0.987 0.002 197.1);
+  --card: oklch(0.17 0.0065 271.01);
+  --popover: oklch(0.21 0.0058 285.9);
+  --popover-foreground: oklch(0.987 0.002 197.1);
+  --muted: oklch(0.30 0.0182 276.35);
+  --muted-foreground: oklch(0.62 0.0218 270.07);
+  --border: oklch(0.56 0.0195 267.65 / 0.2);
+  --chart-label: oklch(0.75 0.01 260);
+  --legend: oklch(0.21 0.006 285.885);
+  --legend-muted: oklch(0.274 0.006 286.033);
+  --legend-muted-foreground: oklch(0.705 0.015 286.067);
+  --legend-track: oklch(0.274 0.006 286.033);
+  --map-bg:   #10161d;
+  --dot-dim:  #5b6b7a;
+  --dot-ring: #0f1519;
+  --tile-filter: invert(1) hue-rotate(180deg) saturate(0.10) brightness(0.86) contrast(1.05);
+}
+
+/* ---------------------------------------------------------------- base --- */
+*{box-sizing:border-box}
+html{font-family:var(--font-sans);-webkit-font-smoothing:antialiased}
+body{margin:0;background:var(--background);color:var(--foreground);font-size:14px;line-height:1.55}
+button:not(:disabled),[role=button]:not(:disabled){cursor:pointer}
+::selection{background:var(--grct-green);color:#fff}
+h1,h2,h3,h4{font-family:var(--font-head);margin:0;letter-spacing:-0.01em}
+.wrap{max-width:1220px;margin:0 auto;padding:0 20px}
+.mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.eyebrow{font-family:var(--font-mono);font-size:10.5px;font-weight:500;letter-spacing:.13em;text-transform:uppercase;color:var(--muted-foreground)}
+
+.topbar{height:4px;background:linear-gradient(90deg,var(--grct-green-deep),var(--grct-green) 45%,var(--grct-orange))}
+header.site{border-bottom:1px solid var(--border);background:var(--card);position:sticky;top:0;z-index:600}
+.hdr{display:flex;align-items:center;gap:16px;height:64px}
+.brand{display:flex;align-items:center;gap:13px;min-width:0}
+.brand svg{flex:none}
+.brand .rule{width:1px;align-self:stretch;margin:10px 0;background:var(--grct-orange)}
+.brand .txt strong{display:block;font-family:var(--font-head);font-weight:700;font-size:15px;color:var(--grct-green-deep);letter-spacing:-.015em;line-height:1.2}
+:root[data-theme="dark"] .brand .txt strong{color:var(--grct-green)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .brand .txt strong{color:var(--grct-green)}}
+.brand .txt span{display:block;font-size:11px;color:var(--muted-foreground)}
+.hdr .spacer{flex:1}
+.hdr nav{display:flex;gap:2px}
+.hdr nav a{padding:7px 11px;font-size:12.5px;font-weight:500;color:var(--muted-foreground);text-decoration:none;transition:.15s}
+.hdr nav a:hover{color:var(--foreground);background:var(--muted)}
+.iconbtn{width:34px;height:34px;display:grid;place-items:center;border:1px solid var(--border);background:var(--card);color:var(--muted-foreground);transition:.15s;padding:0}
+.iconbtn:hover{background:var(--muted);color:var(--foreground)}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:8px 15px;border:1px solid transparent;font-family:var(--font-sans);font-size:12.5px;font-weight:600;transition:.15s;text-decoration:none;background:var(--grct-green-deep);color:#fff}
+.btn:hover{background:var(--grct-green-ink)}
+.btn.ghost{background:transparent;border-color:var(--border);color:var(--foreground)}
+.btn.ghost:hover{background:var(--muted)}
+
+.hero{padding:40px 0 26px;border-bottom:1px solid var(--border);background:
+  radial-gradient(1100px 340px at 12% -10%, color-mix(in oklab, var(--grct-green) 12%, transparent), transparent 65%),
+  radial-gradient(760px 300px at 92% 0%, color-mix(in oklab, var(--grct-orange) 13%, transparent), transparent 62%)}
+.hero-grid{display:grid;grid-template-columns:1fr auto;gap:28px;align-items:end}
+.badge20{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);background:var(--card);padding:5px 11px 5px 6px}
+.badge20 b{display:grid;place-items:center;width:22px;height:22px;background:var(--grct-green-deep);color:#fff;font-family:var(--font-mono);font-size:10px;font-weight:600}
+.badge20 span{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted-foreground)}
+h1.title{font-size:clamp(30px,5.1vw,54px);font-weight:800;line-height:1.02;margin:14px 0 10px;letter-spacing:-.032em}
+h1.title em{font-style:normal;color:var(--grct-green-deep)}
+:root[data-theme="dark"] h1.title em{color:var(--grct-green)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) h1.title em{color:var(--grct-green)}}
+.lede{max-width:56ch;color:var(--muted-foreground);font-size:14.5px;margin:0}
+.pill{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;padding:4px 9px;border:1px solid var(--border);color:var(--muted-foreground);background:var(--card)}
+.pill i{width:6px;height:6px;border-radius:50%;background:var(--grct-green);display:block}
+.pill.live i{animation:blip 1.9s ease-in-out infinite}
+@keyframes blip{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.72)}}
+.pill.sample i{background:var(--grct-orange)}
+
+.card{background:var(--card);border:1px solid var(--border)}
+.card-hd{display:flex;align-items:flex-start;gap:14px;padding:15px 18px;border-bottom:1px solid var(--border)}
+.card-hd h3{font-size:14px;font-weight:700}
+.card-hd p{margin:3px 0 0;font-size:12px;color:var(--muted-foreground)}
+.card-hd .spacer{flex:1}
+.card-bd{padding:18px}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);margin:26px 0 0;border:1px solid var(--border);background:var(--card)}
+.stats>div{padding:16px 18px;border-right:1px solid var(--border)}
+.stats>div:last-child{border-right:0}
+.stat-v{font-family:var(--font-mono);font-size:clamp(24px,3.4vw,34px);font-weight:600;letter-spacing:-.03em;line-height:1.1;display:flex;align-items:baseline;gap:5px}
+.stat-v small{font-size:14px;font-weight:500;color:var(--muted-foreground);letter-spacing:0}
+.stat-k{margin-top:5px;font-size:11.5px;color:var(--muted-foreground)}
+.stat-bar{margin-top:10px;height:4px;background:var(--legend-track);overflow:hidden}
+.stat-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--grct-orange-deep),var(--grct-orange))}
+
+/* ============================================================ the map === */
+#mapcard{position:relative}
+#map{height:clamp(430px,56vh,660px);background:var(--map-bg);z-index:1}
+#map.dragging{cursor:grabbing}
+.leaflet-container{font-family:var(--font-sans);background:var(--map-bg)}
+body.tint-tiles .leaflet-tile-pane{filter:var(--tile-filter)}
+
+/* Leaflet chrome, restyled to the design system (sharp corners, tokens) */
+.leaflet-bar{border:0;box-shadow:0 1px 3px rgb(0 0 0/.14)}
+.leaflet-bar a,.leaflet-bar a:hover{width:32px;height:32px;line-height:32px;border-radius:0;
+  background:var(--card);color:var(--muted-foreground);border-bottom:1px solid var(--border);font-weight:400}
+.leaflet-bar a:hover{background:var(--muted);color:var(--foreground)}
+.leaflet-bar a:last-child{border-bottom:0}
+.leaflet-touch .leaflet-bar a:first-child,.leaflet-touch .leaflet-bar a:last-child{border-radius:0}
+.leaflet-control-attribution{background:color-mix(in oklab,var(--card) 88%,transparent)!important;
+  color:var(--muted-foreground);font-family:var(--font-sans);font-size:10px;padding:2px 7px}
+.leaflet-control-attribution a{color:var(--muted-foreground)}
+.leaflet-control-scale-line{background:color-mix(in oklab,var(--card) 86%,transparent);border-color:var(--border);
+  border-radius:0;color:var(--muted-foreground);font-family:var(--font-mono);font-size:10px;padding:1px 5px}
+
+/* waypoint pin + label, drawn as a divIcon so it keeps a constant screen size */
+.wp{position:relative}
+.wp .pin{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:30px;height:30px;
+  border-radius:50%;background:var(--grct-green-deep);border:3px solid #fff;box-shadow:0 1px 5px rgb(0 0 0/.3);
+  display:grid;place-items:center;transition:transform .18s cubic-bezier(.34,1.4,.5,1)}
+.wp:hover .pin{transform:translate(-50%,-50%) scale(1.14)}
+.wp .pin svg{width:17px;height:17px}
+.wp .lab{position:absolute;white-space:nowrap;font-family:var(--font-head);font-weight:700;font-size:13px;
+  color:var(--grct-green-deep);text-shadow:0 0 3px var(--map-bg),0 0 3px var(--map-bg),0 0 6px var(--map-bg),0 1px 2px var(--map-bg);
+  line-height:1.25;pointer-events:none}
+.wp .lab em{display:block;font-style:normal;font-family:var(--font-mono);font-size:10px;font-weight:400;color:var(--chart-label)}
+:root[data-theme="dark"] .wp .lab{color:#5fd398}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .wp .lab{color:#5fd398}}
+.wp[data-side="right"] .lab{left:22px;top:50%;transform:translateY(-50%)}
+.wp[data-side="left"]  .lab{right:22px;top:50%;transform:translateY(-50%);text-align:right}
+.wp[data-side="top"]   .lab{left:50%;bottom:20px;transform:translateX(-50%);text-align:center}
+.wp[data-side="bottom"].lab,.wp[data-side="bottom"] .lab{left:50%;top:20px;transform:translateX(-50%);text-align:center}
+.flag{position:absolute;top:50%;transform:translateY(-50%);width:26px;height:18px;display:grid;
+  grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);box-shadow:0 1px 3px rgb(0 0 0/.3)}
+.flag i{display:block}
+.wp[data-flag="start"] .flag{right:20px}
+.wp[data-flag="finish"] .flag{left:20px}
+
+/* map overlay furniture */
+.mapctl{position:absolute;top:12px;right:12px;z-index:500;display:flex;flex-direction:column;gap:6px}
+.maphud{position:absolute;left:12px;top:12px;z-index:500;display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.hudchip{background:color-mix(in oklab,var(--card) 92%,transparent);border:1px solid var(--border);
+  padding:5px 9px;font-family:var(--font-mono);font-size:10.5px;color:var(--muted-foreground);
+  backdrop-filter:blur(6px);white-space:nowrap}
+.hudchip b{color:var(--foreground);font-weight:600}
+.zoomhint{display:flex;align-items:center;gap:6px}
+.zoomhint .bars{display:flex;gap:2px;align-items:flex-end;height:11px}
+.zoomhint .bars i{width:3px;background:var(--border);display:block}
+.zoomhint .bars i.on{background:var(--grct-orange)}
+
+.tt{position:absolute;z-index:520;pointer-events:none;opacity:0;transform:translate(-50%,-100%);
+  background:var(--chart-tooltip-background);color:var(--chart-tooltip-foreground);border:1px solid var(--border);
+  padding:9px 11px;min-width:184px;box-shadow:0 8px 24px rgb(0 0 0/.16);transition:opacity .12s}
+.tt.on{opacity:1}
+.tt .tt-n{display:flex;align-items:center;gap:7px;font-weight:600;font-size:12.5px}
+.tt .sw{width:9px;height:9px;flex:none;border-radius:50%}
+.tt dl{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;margin:7px 0 0;font-size:11px}
+.tt dt{color:var(--chart-tooltip-muted)}
+.tt dd{margin:0;font-family:var(--font-mono);text-align:right}
+.map-foot{display:flex;flex-wrap:wrap;align-items:center;gap:10px 20px;padding:11px 18px;border-top:1px solid var(--border);font-size:11.5px;color:var(--muted-foreground)}
+.swatches{display:flex;align-items:center;gap:7px}
+.swatches i{width:11px;height:11px;display:block;border-radius:50%}
+#confetti{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:510}
+
+/* ------------------------------------------------------------- legend --- */
+.legend-container{display:flex;flex-direction:column;gap:1px}
+.legend-container>*{transition:opacity .15s ease-out}
+.legend-container:has([data-hovered])>.li:not([data-hovered]){opacity:.5}
+.li{padding:8px 10px;transition:background .15s ease-out;cursor:pointer}
+.li[data-hovered]{background:var(--legend-muted)}
+.li-top{display:flex;align-items:center;gap:9px}
+.li-mk{width:10px;height:10px;flex:none;border-radius:50%}
+.li-nm{font-weight:600;font-size:12.5px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.li-vl{font-family:var(--font-mono);font-size:12px;font-weight:500}
+.li-vl small{color:var(--legend-muted-foreground);font-weight:400}
+.li-tr{margin-top:6px;height:5px;background:var(--legend-track);overflow:hidden}
+.li-tr i{display:block;height:100%;width:0;transition:width .5s cubic-bezier(.22,1,.36,1)}
+.li-mt{margin-top:5px;display:flex;gap:9px;font-size:10.5px;color:var(--legend-muted-foreground);font-family:var(--font-mono)}
+.scroll{max-height:430px;overflow-y:auto}
+.scroll::-webkit-scrollbar{width:8px}
+.scroll::-webkit-scrollbar-thumb{background:var(--border)}
+
+.leg{display:grid;grid-template-columns:26px 1fr auto;gap:12px;align-items:center;padding:11px 0;border-bottom:1px solid var(--border);cursor:pointer}
+.leg:last-child{border-bottom:0}
+.leg:hover{background:var(--muted)}
+.leg-n{font-family:var(--font-mono);font-size:11px;color:var(--muted-foreground);text-align:center}
+.leg-t{font-size:12.5px;font-weight:600;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.leg-t s{text-decoration:none;color:var(--muted-foreground);font-weight:400}
+.leg-tr{margin-top:6px;height:5px;background:var(--legend-track);overflow:hidden}
+.leg-tr i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--grct-orange-deep),var(--grct-orange));transition:width .6s cubic-bezier(.22,1,.36,1)}
+.leg-v{font-family:var(--font-mono);font-size:12px;text-align:right;white-space:nowrap}
+.leg-v em{font-style:normal;display:block;font-size:10.5px;color:var(--muted-foreground)}
+.tag{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;padding:2px 6px;border:1px solid var(--border);color:var(--muted-foreground)}
+.tag.done{border-color:transparent;background:var(--grct-green-deep);color:#fff}
+.tag.now{border-color:var(--grct-orange);color:var(--grct-orange-deep)}
+:root[data-theme="dark"] .tag.now{color:var(--grct-orange)}
+
+.act{display:grid;grid-template-columns:88px 1fr 66px;gap:11px;align-items:center;padding:7px 0}
+.act-l{font-size:12px;display:flex;align-items:center;gap:7px}
+.act-b{height:9px;background:var(--legend-track);overflow:hidden}
+.act-b i{display:block;height:100%;width:0;transition:width .6s cubic-bezier(.22,1,.36,1)}
+.act-v{font-family:var(--font-mono);font-size:11.5px;text-align:right;color:var(--muted-foreground)}
+
+.feed{display:flex;flex-direction:column}
+.fi{display:grid;grid-template-columns:auto 1fr auto;gap:11px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer}
+.fi:last-child{border-bottom:0}
+.fi:hover{background:var(--muted)}
+.fav{width:28px;height:28px;display:grid;place-items:center;font-family:var(--font-mono);font-size:10.5px;font-weight:600;color:#fff;border-radius:50%}
+.fi-n{font-size:12.5px;font-weight:600}
+.fi-s{font-size:11px;color:var(--muted-foreground)}
+.fi-v{font-family:var(--font-mono);font-size:13px;font-weight:600;text-align:right}
+.fi-v em{font-style:normal;display:block;font-size:10px;color:var(--muted-foreground);font-weight:400}
+
+.grid2{display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start;margin-top:20px}
+.grid3{display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:20px;align-items:start;margin:20px 0 44px}
+section{margin-top:26px}
+footer.site{border-top:1px solid var(--border);background:var(--card);padding:26px 0;font-size:12px;color:var(--muted-foreground)}
+.foot{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+.foot .spacer{flex:1}
+
+/* ------------------------------------------------------------- finale --- */
+#finale{position:fixed;inset:0;z-index:900;display:none;place-items:center;background:color-mix(in oklab,var(--background) 82%, transparent);backdrop-filter:blur(7px)}
+#finale.on{display:grid}
+#fin-card{background:var(--card);border:1px solid var(--border);width:min(560px,calc(100vw - 32px));box-shadow:0 32px 90px rgb(0 0 0/.30);opacity:0}
+#fin-top{padding:26px 26px 20px;text-align:center;position:relative;overflow:hidden;background:
+  radial-gradient(560px 230px at 50% -26%, color-mix(in oklab,var(--grct-orange) 46%, transparent), transparent 72%)}
+#fin-top h2{font-size:clamp(26px,6vw,40px);font-weight:800;letter-spacing:-.035em;line-height:1.03}
+#fin-km{font-family:var(--font-mono);font-size:clamp(40px,10vw,68px);font-weight:600;letter-spacing:-.045em;color:var(--grct-green-deep);line-height:1}
+:root[data-theme="dark"] #fin-km{color:var(--grct-green)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #fin-km{color:var(--grct-green)}}
+#fin-stats{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--border)}
+#fin-stats>div{padding:13px;text-align:center;border-right:1px solid var(--border)}
+#fin-stats>div:last-child{border-right:0}
+#fin-stats b{display:block;font-family:var(--font-mono);font-size:19px;font-weight:600}
+#fin-stats span{font-size:10.5px;color:var(--muted-foreground)}
+#fin-act{display:flex;gap:9px;padding:16px 26px 22px;justify-content:center;border-top:1px solid var(--border)}
+#fin-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:950;pointer-events:none;display:none}
+#fin-canvas.on{display:block}
+
+@media (max-width:1000px){
+  .grid2,.grid3{grid-template-columns:1fr}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .stats>div:nth-child(2){border-right:0}
+  .stats>div:nth-child(-n+2){border-bottom:1px solid var(--border)}
+  .hero-grid{grid-template-columns:1fr}
+  .hdr nav{display:none}
+}
+@media (max-width:520px){
+  .hdr{height:auto;min-height:56px;padding:9px 0;gap:10px}
+  .brand svg{width:29px;height:29px}
+  .brand .txt strong{font-size:12px;line-height:1.18}
+  .brand .txt span{display:none}
+  .btn{padding:7px 11px;font-size:12px}
+  .stats{grid-template-columns:1fr}
+  .stats>div{border-right:0;border-bottom:1px solid var(--border)}
+  .stats>div:last-child{border-bottom:0}
+  #map{height:clamp(360px,62vh,520px)}
+  .maphud .hudchip:not(#map-hint){display:none}
+  .maphud{gap:0}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar"></div>
+<header class="site">
+  <div class="wrap hdr">
+    <div class="brand">
+      <svg width="36" height="36" viewBox="0 0 48 48" aria-hidden="true">
+        <path d="M24 9c-5.6 0-10 3.5-10 8.2 0 4.4 4.4 7.6 10 7.6s10-3.2 10-7.6C34 12.5 29.6 9 24 9Z" fill="none" stroke="#2bb673" stroke-width="2.6"/>
+        <path d="M8 24c0 7 5.5 13.5 13 15" fill="none" stroke="#1f8454" stroke-width="2.6" stroke-linecap="round"/>
+        <path d="M40 24c0 7-5.5 13.5-13 15" fill="none" stroke="#1f8454" stroke-width="2.6" stroke-linecap="round"/>
+        <circle cx="24" cy="17" r="2.4" fill="#fbb040"/>
+      </svg>
+      <div class="rule"></div>
+      <div class="txt">
+        <strong>The Garden Route Children&rsquo;s Trust</strong>
+        <span>Helping to educate and feed South African children in need</span>
+      </div>
+    </div>
+    <div class="spacer"></div>
+    <nav>
+      <a href="https://www.grct.org.uk/who-are-we/">Who we are</a>
+      <a href="https://www.grct.org.uk/who-we-support/">Who we support</a>
+      <a href="https://www.grct.org.uk/the-great-garden-route-trek/">The Trek</a>
+    </nav>
+    <button class="iconbtn" id="theme" title="Toggle light / dark" aria-label="Toggle light or dark theme">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.2 5.2l1.4 1.4M17.4 17.4l1.4 1.4M18.8 5.2l-1.4 1.4M6.6 17.4l-1.4 1.4"/></svg>
+    </button>
+    <a class="btn" href="https://www.justgiving.com/campaign/grct-trek" target="_blank" rel="noopener">Donate</a>
+  </div>
+</header>
+
+<main>
+<div class="hero">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <div class="badge20"><b>20</b><span>Years nourishing hope &middot; 2006&ndash;2026</span></div>
+        <h1 class="title">The Great Garden&nbsp;Route <em>Trek</em></h1>
+        <p class="lede">Every kilometre walked, run, cycled or swum by our supporters lights up the road from
+          Wellington to Port Elizabeth. Zoom in anywhere to see exactly who covered which stretch.</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-start">
+        <span class="pill live" id="src-pill"><i></i><span id="src-txt">Loading</span></span>
+        <span class="pill" id="upd-pill" hidden>Updated <span id="upd-txt" class="mono"></span></span>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div>
+        <div class="stat-v"><span id="s-km">0</span><small>km</small></div>
+        <div class="stat-k">Logged by our trekkers</div>
+        <div class="stat-bar"><i id="s-bar"></i></div>
+      </div>
+      <div>
+        <div class="stat-v"><span id="s-pct">0</span><small>%</small></div>
+        <div class="stat-k">Of the 1,000&nbsp;km route complete</div>
+      </div>
+      <div>
+        <div class="stat-v"><span id="s-people">0</span></div>
+        <div class="stat-k">Trekkers taking part</div>
+      </div>
+      <div>
+        <div class="stat-v"><span id="s-left">0</span><small>km</small></div>
+        <div class="stat-k" id="s-left-k">Still to go</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <section>
+    <div class="card" id="mapcard">
+      <div class="card-hd">
+        <div>
+          <h3>Wellington &rarr; Port Elizabeth</h3>
+          <p id="map-sub">1,000&nbsp;km along South Africa&rsquo;s southern coast</p>
+        </div>
+        <div class="spacer"></div>
+        <span class="tag" id="map-tag">&mdash;</span>
+      </div>
+
+      <div style="position:relative">
+        <div id="map"></div>
+
+        <div class="maphud">
+          <div class="hudchip zoomhint">
+            <span class="bars" id="zbars" aria-hidden="true"></span>
+            <span>1 dot = <b id="lod-km">10 km</b></span>
+          </div>
+          <div class="hudchip" id="hud-view">&mdash;</div>
+          <div class="hudchip" id="map-hint" hidden></div>
+        </div>
+
+        <div class="mapctl">
+          <button class="iconbtn" id="fit" title="Show the whole route" aria-label="Show the whole route">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9V3h6M21 9V3h-6M3 15v6h6M21 15v6h-6"/></svg>
+          </button>
+          <button class="iconbtn" id="replay" title="Replay the route" aria-label="Replay the route animation">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 2.6-6.4"/><path d="M3 4v5h5"/></svg>
+          </button>
+        </div>
+
+        <canvas id="confetti" aria-hidden="true"></canvas>
+        <div class="tt" id="tt" aria-hidden="true"></div>
+      </div>
+
+      <div class="map-foot">
+        <span class="swatches"><i style="background:var(--dot-dim)"></i> Not yet covered</span>
+        <span class="swatches" id="sw-live"></span>
+        <span style="flex:1"></span>
+        <span class="mono" id="dot-scale"></span>
+      </div>
+    </div>
+  </section>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="card-hd">
+        <div><h3>The six legs</h3><p>Click a leg to zoom the map to it</p></div>
+      </div>
+      <div class="card-bd"><div id="legs"></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-hd">
+        <div><h3>Our trekkers</h3><p>Hover to highlight, click to fly there</p></div>
+      </div>
+      <div class="card-bd scroll" style="padding:8px"><div id="people" class="legend-container"></div></div>
+    </div>
+  </div>
+
+  <div class="grid3">
+    <div class="card">
+      <div class="card-hd"><div><h3>How we&rsquo;re travelling</h3><p>Distance by activity</p></div></div>
+      <div class="card-bd"><div id="acts"></div></div>
+    </div>
+    <div class="card">
+      <div class="card-hd"><div><h3>Latest submissions</h3><p>Newest first &middot; click to locate</p></div></div>
+      <div class="card-bd scroll" style="max-height:330px"><div class="feed" id="feed"></div></div>
+    </div>
+    <div class="card">
+      <div class="card-hd"><div><h3>Join the trek</h3><p>Every kilometre feeds a child</p></div></div>
+      <div class="card-bd">
+        <p style="margin:0 0 12px;font-size:12.5px;color:var(--muted-foreground)">
+          Choose your distance and how you&rsquo;ll cover it &mdash; walk, run, cycle, swim or scoot. Send your total to
+          <a class="mono" style="color:var(--grct-green-deep)" href="mailto:trek@grct.org.uk">trek@grct.org.uk</a>
+          and we&rsquo;ll add you to the map.
+        </p>
+        <div style="border:1px solid var(--border);padding:11px;margin-bottom:12px">
+          <div class="eyebrow" style="margin-bottom:7px">What your entry funds</div>
+          <div style="display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:11.5px">
+            <span class="mono">&pound;5</span><span style="color:var(--muted-foreground)">One term of e&rsquo;Pap breakfasts</span>
+            <span class="mono">&pound;10</span><span style="color:var(--muted-foreground)">Two school terms for a child</span>
+            <span class="mono">&pound;20</span><span style="color:var(--muted-foreground)">A full school year, one child</span>
+          </div>
+        </div>
+        <a class="btn" style="width:100%;justify-content:center" href="https://www.justgiving.com/campaign/grct-trek" target="_blank" rel="noopener">Sign up on JustGiving</a>
+        <button class="btn ghost" style="width:100%;justify-content:center;margin-top:8px" id="preview">Preview the finish celebration</button>
+      </div>
+    </div>
+  </div>
+</div>
+</main>
+
+<footer class="site">
+  <div class="wrap foot">
+    <span>&copy; 2026 The Garden Route Children&rsquo;s Trust</span>
+    <span class="mono">Registered charity no. 1116278</span>
+    <span class="spacer"></span>
+    <span id="foot-src" class="mono"></span>
+  </div>
+</footer>
+
+<canvas id="fin-canvas" aria-hidden="true"></canvas>
+<div id="finale" role="dialog" aria-modal="true" aria-labelledby="fin-h">
+  <div id="fin-card">
+    <div id="fin-top">
+      <div class="eyebrow" style="margin-bottom:10px">Wellington &rarr; Port Elizabeth</div>
+      <div id="fin-km">0</div>
+      <div class="eyebrow" style="margin:4px 0 14px">kilometres together</div>
+      <h2 id="fin-h">We made it.</h2>
+      <p style="margin:9px auto 0;max-width:38ch;font-size:13px;color:var(--muted-foreground)" id="fin-p">
+        The Great Garden Route Trek is complete. Thank you for walking every step with us.
+      </p>
+    </div>
+    <div id="fin-stats">
+      <div><b id="fin-n">0</b><span>trekkers</span></div>
+      <div><b id="fin-s">0</b><span>submissions</span></div>
+      <div><b id="fin-d">6</b><span>legs completed</span></div>
+    </div>
+    <div id="fin-act">
+      <button class="btn ghost" id="fin-close">See the map</button>
+      <a class="btn" href="https://www.justgiving.com/campaign/grct-trek" target="_blank" rel="noopener">Donate</a>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ============================================================================
+ *  THE GREAT GARDEN ROUTE TREK — live progress tracker
+ *  Garden Route Children's Trust · registered charity 1116278
+ *
+ *  Map      : Leaflet 1.9 + CARTO basemap tiles (OpenStreetMap data)
+ *  Route    : the real N2 / coastal road, from OSRM, simplified to 18 m
+ *  Motion   : motion.dev v13
+ *  Visuals  : Bklit UI design tokens (oklch, radius 0, chart/legend semantics)
+ *
+ *  ─────────────────────────────────────────────────────────────────────────
+ *  (1) Everything you need to edit lives in CONFIG, below.
+ *  (2) To go from hand-typed to automated, change CONFIG.data.mode only.
+ *  (3) A live system can push straight in at runtime:
+ *        GRCTTrek.add({ name:'Ada L', km:12, activity:'run', date:'2026-09-14' })
+ *        GRCTTrek.set([...]);  GRCTTrek.refresh()
+ * ========================================================================= */
+
+/* The route geometry: six legs of real road, delta-encoded at 1e-5 degrees.
+   Regenerate with OSRM if the route ever changes; nothing else depends on it. */
+const ROUTE_GEOMETRY = [{"from":"Wellington","to":"Cape Town","km":95,"d":[1901120,-3363900,-39,45,-641,-331,61,-137,-44,-50,-165,-86,-62,-80,-56,-190,-37,-375,-772,288,-348,199,-214,39,-465,-52,-1179,-351,-1168,-217,-265,-87,-2145,-970,-220,-34,-612,16,-372,-99,-199,-121,-334,-294,-739,-350,-258,-159,-530,-520,-117,-169,-66,-182,-69,-689,-78,-355,-586,-1289,-138,-430,-236,-1246,94,-1263,-13,-188,-712,-2923,-120,-1277,-123,-220,-975,-986,-101,-146,-65,-167,-18,-178,91,-375,-408,-34,-561,-117,-13406,-3754,-317,-159,-4333,-2805,-4110,-1763,-480,-168,-400,-88,-399,-52,-2275,-134,-354,73,-752,376,-215,47,-204,8,-3729,-623,-239,-17,-233,23,-234,65,-731,371,-187,70,-296,47,-295,-20,-272,-81,-251,-148,-2551,-2343,-303,-219,-422,-206,-405,-120,-519,-92,-291,-7,-1276,-290,-639,-67,-875,-22,-185,-26,-955,16,-251,40,-261,94,-395,-374,-39,-331,-232,12,-109,-22,-286,249]},{"from":"Cape Town","to":"Kleinmond","km":125,"d":[1842410,-3392490,114,-112,78,78,-8,47,43,60,495,-166,249,-35,51,-53,23,-145,296,-265,233,-97,466,-63,239,-82,403,-279,294,-112,312,-162,66,-78,82,-272,56,-68,99,-28,253,17,183,-25,119,-74,124,-204,21,-379,-294,-545,-34,-262,-61,-175,-246,-138,-115,-316,-55,-78,-1027,-796,-86,-126,2,-105,124,-245,328,-169,105,-94,0,-76,-90,-116,38,-212,-118,-154,-9,-56,402,-712,-49,-110,-456,-390,-43,-75,14,-446,222,-501,121,-408,6,-220,-68,-212,-869,-1621,-57,-266,-3,-603,33,-243,478,-1847,-9,-224,-219,-1016,28,-357,932,-16,-70,-401,18,-74,401,-473,539,-541,204,-275,105,-411,-23,-596,315,31,20,-112,-188,-61,-57,-47,-23,-65,32,119,48,-7,175,59,-13,114,367,119,18,91,469,185,68,55,93,-7,745,281,51,-36,277,-6,1149,324,730,131,331,25,3355,682,233,89,216,127,511,430,176,102,185,57,465,75,1104,324,1305,69,1035,232,1512,227,263,-2,795,-75,572,2,383,-70,547,51,549,-49,785,-13,656,52,561,-26,406,99,228,20,878,-138,249,42,630,248,176,21,334,-9,194,34,134,49,186,117,1199,966,157,152,148,204,875,1554,173,-149,609,-234,309,-56,1199,-128,419,-108,349,-167,1639,-993,410,-175,301,-59,306,-11,957,107,238,-32,190,-64,1761,-1041,1513,-1340,338,-152,298,-30,102,-42,985,-929,-398,-279,86,-155,193,-181,143,-88,-589,-531,-76,-76,0,-32,357,-351,84,-272,1298,-1585,30,-69,-3,-138,38,-77,1433,-1756,279,-244,-323,-190,-87,-90,-84,58,162,-338,-13,-118,-115,-157,-47,23,-75,-97,-424,-208,-47,53,-220,-65,-93,-90,-16,11,63,51,8,42,-65,55,50,-22,13,-51,-69,-75,-26,-81,-242,-141,-622,-152,-827,-316,-568,-131,-340,-231,-171,-48,-155,-87,-227,-240,-125,-59,-55,-62,-181,-81,-404,-450,-52,-144,-16,-137,62,-394,255,-490,127,-162,460,-407,58,-98,152,-70,114,-214,128,-41,-20,-159,289,-337,-174,-332,-89,-243,22,-76,110,-47,8,-150,81,-98,80,-36,143,-128,159,-73,62,-71,263,-186,1090,-1098,7,-235,76,-152,-114,-296,188,-167,15,-94,-51,-177,117,-141,39,-98,-7,-101,-94,-273,-75,-132,-11,-119,-193,-392,23,-207,-111,-132,-61,-168,-818,-578,-283,-95,-178,-25,-88,-70,-190,-83,-371,-116,-105,-66,-94,-117,-136,-273,-22,-130,-248,-265,-48,-147,3,-124,-138,-143,-116,-230,-34,-185,-10,-395,75,-182,-5,-95,-71,-75,-199,-53,-61,-72,12,-70,48,-45,390,-100,191,-148,84,-106,53,-123,60,-319,262,-505,85,-411,81,-127,301,-300,105,-142,342,-702,147,-413,141,-218,1373,-1248,786,-835,246,-142,317,-58,183,13,2174,398,1272,367,408,46,570,206,290,52,248,-21,744,-212,462,-49,347,-135,753,-207,416,19,903,-70,1296,16,170,86,86,115,224,745,63,121,162,154,327,159,148,124,520,729,45,133,4,272,42,57,102,38,156,-15,81,-46,145,-348,120,-127,137,-83,218,-62,441,-6,191,-26,971,-348,140,-18,1550,99,-1,106]},{"from":"Kleinmond","to":"Swellendam","km":160,"d":[1903110,-3433900,1,-106,429,36,816,312,1312,435,308,78,2611,198,3173,1068,446,233,915,739,99,117,141,257,587,513,203,106,221,37,-15,-206,42,-228,459,-1059,34,-216,-48,-173,-84,-123,-725,-720,-89,-121,-67,-205,-205,-999,0,-235,45,-198,557,-1424,42,-190,6,-273,-21,-185,-414,-1778,-352,-993,-22,-167,31,-217,136,-243,408,-427,267,-166,882,-282,235,-43,920,31,641,-6,940,-80,570,-75,405,-77,1635,-398,1299,-455,1889,-129,112,87,-11,53,65,-17,25,27,34,-10,-34,10,-25,-27,-65,17,11,-53,152,41,265,246,85,-90,119,-34,121,175,627,368,439,7,563,166,138,61,134,136,344,143,153,128,168,70,207,-47,2689,-883,105,-13,156,26,119,58,183,271,142,115,444,112,424,252,280,85,906,-2,856,-138,1366,-51,322,20,1767,221,392,-9,615,-126,5781,-1712,397,-71,1346,-104,247,-75,184,-116,159,-183,78,-211,-11,-216,-131,-302,-49,-230,-160,-223,-66,-171,-70,42,-215,-248,-239,81,-446,250,420,-240,253,-91,227,248,182,-62,1746,-63,234,26,4440,2134,408,175,300,25,395,-119,107,5,489,282,852,396,152,26,307,-31,313,61,907,331,685,172,201,-4,376,-106,282,40,138,-13,139,-98,74,-182,68,-78,96,-46,139,-2,2595,892,180,101,243,199,302,124,108,76,184,440,299,196,203,217,82,163,80,305,144,230,157,140,1154,842,241,209,347,416,872,1292,457,397,230,96,383,74,655,261,298,211,146,71,421,48,1190,312,1693,531,530,270,228,85,237,56,1644,211,136,42,127,79,1513,2116,151,311,638,1743,544,998,46,243,-131,1804,46,183,152,162,1090,640,127,123,65,118,32,148,-31,2130,29,316,1184,4021,62,149,249,302,33,125,-23,149,10076,1680,155,50,254,154,118,28,1169,-152,117,-51,215,-150,168,-55,3369,-456,210,-7,244,40,199,72,161,95,1391,1084,324,162,249,52,3228,278,216,45,199,82,258,198,1359,1588,214,208,234,125,1933,623,342,157,244,178,182,193,923,1360,177,183,144,91,197,79,1275,305,399,8,286,-64,1406,-566,239,-62,2117,-149,1405,-291,1578,-95,1921,-363,234,4,1605,230,209,10,192,-24,2261,-534,282,-44,9951,-24,1168,-162,276,17,2785,1167,246,157,859,679,716,389,283,226,839,1073,799,783,786,921,204,334,310,852,129,253,492,649,415,268,14,68,168,187,-419,401,298,207,-84,68,-56,-34]},{"from":"Swellendam","to":"Knysna","km":280,"d":[2044100,-3402100,56,34,84,-68,538,426,167,35,560,-320,236,-213,123,-71,174,-23,416,39,91,-84,401,-45,3315,-933,1452,-463,269,-15,1306,168,260,12,3261,-644,311,-165,715,-722,292,-182,658,-243,717,-158,235,-4,291,69,166,10,173,-24,202,-90,1380,-1164,293,-302,1823,-1502,203,-131,213,-77,386,-27,3430,288,563,-20,4028,-713,227,-120,933,-738,221,-98,202,-46,314,3,1079,138,250,-48,458,-236,161,-45,1547,-3,233,49,904,401,313,26,189,-43,144,-71,817,-652,673,-359,241,-80,261,-43,5223,-449,344,24,1445,356,1794,-16,2913,305,1949,727,202,162,387,495,120,111,1127,458,531,453,166,95,204,54,1095,113,796,150,211,-31,175,-72,410,-392,190,-112,174,-60,1206,-237,1867,-6,279,-37,243,-76,989,-412,590,-102,738,-307,303,-87,147,-81,2269,-1937,201,-115,236,-87,291,-53,252,-2,409,83,3859,1483,4327,674,351,138,1081,729,352,157,2265,476,296,17,181,-23,194,-56,241,-123,599,-514,23,-129,-107,-311,-6,-132,236,-592,-29,-706,37,-187,66,-141,733,-937,160,-155,254,-110,586,-91,179,-108,262,-362,226,-590,34,-408,65,-125,113,-70,109,-20,334,94,203,-16,1389,-660,78,-87,24,-101,-90,-314,52,-135,73,-90,300,-201,411,-119,125,-63,627,-536,131,-80,160,-43,159,-4,2072,75,3214,-414,3495,-710,868,-259,895,-101,1955,-395,898,-280,959,-95,7192,-1450,1652,-537,453,-88,548,-35,6032,233,2918,686,5228,937,3832,855,247,31,1254,-44,233,-81,291,-231,150,-67,1106,-130,553,-212,2951,-366,497,0,378,70,5716,1642,593,103,1435,175,22631,-624,2,59,-85,9,5,100,48,28,235,-5,-14,61,46,9,28,78,68,38,112,8,6,-31,109,-2,-109,2,-6,31,-37,-1,70,77,284,-155,47,-71,3,-78,111,-10,-20,174,-132,316,-96,114,-542,294,-460,351,-213,211,-238,73,-453,85,-197,95,-350,361,-232,189,-198,357,-119,385,-1,92,91,316,-26,142,-435,52,31,91,126,73,45,67,307,1320,309,784,93,755,125,270,1341,1645,843,495,1903,1451,2013,908,1673,558,2305,367,727,54,165,35,1039,562,813,289,282,230,122,55,137,17,123,-18,819,-375,302,-38,540,53,250,65,212,107,426,312,154,57,470,-13,308,133,168,30,169,-25,275,-111,240,3,146,58,121,104,60,112,45,261,77,173,145,168,206,133,3614,1054,192,30,543,1,888,57,492,146,730,117,427,-38,205,19,182,63,1422,740,787,233,502,101,238,17,774,-97,490,-17,502,47,746,144,397,139,1086,596,389,122,2077,347,1451,-16,1514,99,292,99,1252,637,235,173,147,45,157,-9,128,-53,916,-775,160,-82,170,-38,239,14,566,172,534,306,246,244,138,64,109,16,151,-58,274,-296,51,-25,82,26,54,130,100,115,88,26,88,-26,49,-95,-76,-194,34,-200,50,-95,123,-102,253,-105,352,-194,87,25,185,207,116,40,940,63,393,-89,574,29,-52,-67,-20,30,68,27,-410,-10,324,21,1062,-26,218,-35,432,-185,133,-3,441,62,330,-7,3480,-470,1257,145,806,-20,166,42,496,217,252,34,164,-34,653,-267,224,-50,2360,-249,537,-9,467,-74,509,-14,390,100,141,0,529,-156,614,-70,963,-301,289,-65,3383,-14,883,-145,1431,-578,1840,-501,335,-37,1922,-102,890,-106,825,-64,1615,-231,2294,-940,818,-203,489,-93,408,-20,163,34,384,251,297,76,261,128,257,66,384,255,542,237,158,33,394,-36,470,41,439,-151,595,-140,273,-33,134,-93,371,-471,159,-75,113,-3,682,179,583,91,86,85,57,218,356,488,109,81,120,25,268,-61,245,-151,233,12,111,-35,192,-261,283,-178,146,-269,115,-138,115,-91,126,-43,140,4,759,159,577,14,247,59,523,-49,376,68,299,154,375,-57,44,23,15,-28,-26,-1,-8,-62]},{"from":"Knysna","to":"St Francis Bay","km":200,"d":[2304800,-3403600,-26,-142,125,-16,30,198,287,-32,502,-146,184,-6,321,-70,239,30,385,-220,851,-134,909,-250,302,-26,222,-79,141,-8,166,47,381,198,200,59,416,29,309,-116,156,-16,424,140,432,22,168,84,461,477,207,90,150,-3,803,-260,233,-44,1804,190,128,55,116,129,156,807,129,105,207,36,729,-258,187,-12,338,44,182,-26,359,-173,454,-91,389,-215,383,-79,1144,-401,880,-76,1336,40,777,-48,628,-104,1862,-457,584,-89,4538,-6,512,-22,1224,-240,1165,-678,184,-70,189,-21,194,27,1129,437,101,-78,350,-63,711,-428,188,-68,38,409,-54,-5,150,40,61,129,-14,50,-281,233,-33,54,-10,150,178,195,-27,317,-53,48,1580,2383,226,284,571,612,302,391,173,82,390,19,161,-69,201,-193,143,-85,512,-151,166,-8,232,105,405,325,1120,294,144,75,100,94,77,183,-20,209,24,103,72,103,164,131,66,116,67,532,-70,191,-656,836,-33,117,15,96,127,159,158,59,359,34,293,107,381,-59,154,19,160,89,181,208,181,72,406,-36,325,61,251,-56,153,6,678,320,139,121,634,919,162,133,557,362,223,202,153,232,254,571,120,127,207,105,188,31,836,-35,839,11,2453,179,182,-6,215,-56,729,-421,169,-71,341,-59,5382,142,242,-15,170,-43,241,-109,220,-176,1816,-2298,259,-175,187,-68,187,-31,1185,-29,6978,-638,3817,-122,542,-66,774,-160,418,-37,412,21,3009,300,4552,487,234,61,675,326,298,42,953,-95,787,-39,5,-100,121,-259,-210,-349,753,-323,770,-173,-770,173,-401,169,107,292,-18,181,48,199,120,129,-111,19,-7,22,3811,-169,1655,-171,434,-105,939,-345,1227,-380,319,-78,530,-63,3683,-286,1818,3,336,52,571,142,326,21,220,-17,390,-80,2946,-805,633,-133,6497,-110,5624,-384,6637,-890,750,-288,774,-140,380,-95,11796,-3696,9298,-841,404,16,355,84,3083,1221,172,96,153,130,468,621,125,79,202,65,170,10,201,-35,1002,-350,1025,-540,272,-48,300,38,204,87,134,99,516,650,198,175,2820,1414,788,225,907,131,991,314,796,45,249,38,1246,386,366,162,1324,848,319,123,304,48,248,-6,748,-166,331,-21,2289,171,261,-47,3758,-1072,293,-68,283,-19,85,-566,-222,-1189,-57,-84,-113,-62,-169,-39,-224,14,-65,-26,-43,-49,-242,-725,1108,-208,324,-142,227,-180,157,-195,497,-825,245,-1175,152,-128,405,-128,110,-131,19,-190,-33,-174,-327,-544,-57,-233,1,-134,643,-4679,884,-2097,144,-187,423,-323,95,-121,22,-105,-52,-817,9,-64,68,-3,13,-128,120,-97,53,-12,358,59,256,7,24,-588,152,-199,104,-257,85,23,56,-71,183,56,40,41,278,-186,53,52,237,409]},{"from":"St Francis Bay","to":"Port Elizabeth","km":140,"d":[2484000,-3417000,-237,-409,-53,-52,-311,210,-100,33,-161,-8,15,-75,-85,-23,-104,257,-152,199,-24,588,-256,-7,-378,-58,-138,87,-28,141,-93,-2,68,894,-22,105,-95,121,-423,323,-144,187,-884,2097,-643,4679,-1,134,57,233,327,544,33,174,-19,190,-110,131,-405,128,-152,128,-245,1175,-497,825,-157,195,-227,180,-324,142,-1108,208,242,725,43,49,65,26,224,-14,169,39,113,62,57,84,222,1189,-85,566,443,-204,6874,-1957,380,-48,457,80,264,131,2861,1746,1054,454,2916,2058,334,291,1465,1724,206,189,266,178,4897,2461,357,67,1319,-24,248,36,1913,461,1308,587,637,172,183,125,327,295,76,167,33,335,51,120,96,117,1046,613,465,205,359,75,357,21,542,-33,368,-139,170,-32,681,19,157,49,1302,663,1047,356,214,42,299,7,607,-131,3523,-947,1990,-774,216,-9,4206,191,546,-44,11155,-2573,5544,-1579,513,-27,6621,605,450,-25,1470,-296,346,-32,294,13,1229,153,654,99,343,80,1323,-156,712,-147,501,-25,755,-117,573,-221,1774,-588,149,44,80,85,209,-118,131,120,37,1,103,-189]}];
+
+const CONFIG = {
+  goalKm: 1000,
+
+  /* --- where the numbers come from ------------------------------------- */
+  data: {
+    /* 'inline'  — the list typed into this file (today: email submissions)
+     * 'fetch'   — poll a JSON or CSV endpoint (a published Google Sheet, a
+     *             form backend, a small API). Set `endpoint`.
+     * 'live'    — a push feed. Implement connect() below and call `push`
+     *             whenever new data arrives (SSE, WebSocket, Firebase…).      */
+    mode: 'inline',
+    endpoint: null,
+    pollMs: 60000,          // 'fetch' mode; 0 = fetch once only
+
+    /* Map whatever your source returns onto the shape this page needs:
+     *   { id, name, km, activity, date, note }
+     * activity ∈ walk | run | cycle | swim | hike | scoot | other
+     * Order matters — contributions are laid along the road in this order.  */
+    normalise(rows){
+      return rows.map((r, i) => ({
+        id:       r.id ?? ('r' + i),
+        name:     String(r.name ?? r.Name ?? 'Anonymous').trim(),
+        km:       Number(r.km ?? r.Km ?? r.kilometres ?? r.distance ?? 0),
+        activity: String(r.activity ?? r.Activity ?? 'walk').toLowerCase().trim(),
+        date:     r.date ?? r.Date ?? null,
+        note:     r.note ?? r.Note ?? null
+      })).filter(r => r.name && r.km > 0);
+    },
+
+    connect(push){
+      // const es = new EventSource(CONFIG.data.endpoint);
+      // es.onmessage = e => push(JSON.parse(e.data));
+      // return () => es.close();
+      console.warn('[GRCT] mode is "live" but CONFIG.data.connect() is not implemented yet.');
+    },
+
+    /* SAMPLE DATA — replace with the real submissions and set sample:false. */
+    sample: true,
+    inline: [
+      { id:'s01', name:'Penny Fleming',       km: 42, activity:'walk',  date:'2026-09-01', note:'Opened the trek on the Downs' },
+      { id:'s02', name:'Oxshott Primary',     km: 68, activity:'walk',  date:'2026-09-02', note:'Whole of Year 4, one lunchtime' },
+      { id:'s03', name:'Mark Chapman',        km: 31, activity:'run',   date:'2026-09-03' },
+      { id:'s04', name:'The Hurrell family',  km: 24, activity:'walk',  date:'2026-09-04', note:'Four of us plus the dog' },
+      { id:'s05', name:'Cathy Williamson',    km: 55, activity:'cycle', date:'2026-09-05' },
+      { id:'s06', name:'Ruth Burns',          km: 18, activity:'walk',  date:'2026-09-06' },
+      { id:'s07', name:'Knysna e’Pap crew',   km: 46, activity:'walk',  date:'2026-09-07', note:'Cheer relay along the lagoon' },
+      { id:'s08', name:'Nicki Galazka',       km: 27, activity:'swim',  date:'2026-09-08', note:'Lido, 30 lengths a day' },
+      { id:'s09', name:'Cath Mitchell',       km: 39, activity:'hike',  date:'2026-09-09' },
+      { id:'s10', name:'St Andrew’s Oxshott', km: 84, activity:'walk',  date:'2026-09-11', note:'Sunday congregation walk' },
+      { id:'s11', name:'Patrick Fleming',     km: 63, activity:'cycle', date:'2026-09-12' },
+      { id:'s12', name:'Shelley Godsell',     km: 22, activity:'walk',  date:'2026-09-13' },
+      { id:'s13', name:'Hout Bay volunteers', km: 37, activity:'run',   date:'2026-09-15' },
+      { id:'s14', name:'The Bell family',     km: 29, activity:'scoot', date:'2026-09-16', note:'Two scooters, one balance bike' },
+      { id:'s15', name:'Vryburg supporters',  km: 41, activity:'walk',  date:'2026-09-17' },
+      { id:'s16', name:'Anna Whitfield',      km: 16, activity:'run',   date:'2026-09-18' }
+    ]
+  },
+
+  /* --- the map --------------------------------------------------------- */
+  map: {
+    /* OpenStreetMap's own tiles: no API key, no sign-up, and clearly licensed
+       for a site this size (attribution below is required, and is rendered).
+       They're a full-colour street map, so `tileFilter` in the CSS desaturates
+       them into a quiet grey canvas — that's what keeps the orange route the
+       loudest thing on the map.
+
+       If traffic ever grows beyond OSM's fair-use tile policy
+       (https://operations.osmfoundation.org/policies/tiles/), swap in a keyed
+       provider here and drop the filter. Both of these have free tiers:
+         CARTO   https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?api_key=KEY
+         Stadia  https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png?api_key=KEY
+       …and set filterTiles:false so their own styling comes through.        */
+    tiles: {
+      light: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+      dark:  'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
+    },
+    filterTiles: true,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    minZoom: 6,
+    maxZoom: 15,
+
+    /* Level of detail: as you zoom in, each dot splits into smaller ones.
+       `z` is the highest Leaflet zoom this tier covers; `km` is what one dot
+       is worth there; `r` is its radius in pixels. Spacing stays ~16–20 px. */
+    lod: [
+      { z: 7,  km: 20,   r: 5.4 },
+      { z: 8,  km: 10,   r: 5.0 },
+      { z: 9,  km: 5,    r: 4.7 },
+      { z: 10, km: 2,    r: 4.3 },
+      { z: 11, km: 1,    r: 4.0 },
+      { z: 12, km: 0.5,  r: 3.8 },
+      { z: 13, km: 0.25, r: 3.6 },
+      { z: 99, km: 0.1,  r: 3.4 }
+    ]
+  },
+
+  /* Which side of its pin each town's label sits on. */
+  waypointLabels: {
+    'Wellington':     'top',    'Cape Town':      'left',
+    'Kleinmond':      'bottom', 'Swellendam':     'top',
+    'Knysna':         'bottom', 'St Francis Bay': 'bottom',
+    'Port Elizabeth': 'top'
+  },
+
+  finale: { autoPlayWhenComplete: true, everyVisit: true }
+};
+
+/* ============================================================================
+ *  DATA SOURCE
+ * ========================================================================= */
+const store = { rows: [], updatedAt: null, mode: CONFIG.data.mode, teardown: null };
+
+function parseCSV(text){
+  const lines = text.replace(/\r/g,'').split('\n').filter(l => l.trim());
+  if (!lines.length) return [];
+  const split = l => {
+    const out = []; let cur = '', q = false;
+    for (let i = 0; i < l.length; i++){
+      const c = l[i];
+      if (c === '"'){ if (q && l[i+1] === '"'){ cur += '"'; i++; } else q = !q; }
+      else if (c === ',' && !q){ out.push(cur); cur = ''; }
+      else cur += c;
+    }
+    out.push(cur); return out;
+  };
+  const head = split(lines[0]).map(h => h.trim());
+  return lines.slice(1).map(l => {
+    const cells = split(l);
+    return Object.fromEntries(head.map((h, i) => [h, (cells[i] ?? '').trim()]));
+  });
+}
+
+async function loadRows(){
+  const d = CONFIG.data;
+  if (d.mode === 'fetch'){
+    if (!d.endpoint) throw new Error('CONFIG.data.endpoint is not set');
+    const res = await fetch(d.endpoint, { cache:'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const body = await res.text();
+    let raw;
+    try { raw = JSON.parse(body); } catch { raw = parseCSV(body); }
+    if (!Array.isArray(raw)) raw = raw.rows ?? raw.data ?? raw.submissions ?? [];
+    return d.normalise(raw);
+  }
+  return d.normalise(d.inline);
+}
+
+async function boot(){
+  try { store.rows = await loadRows(); }
+  catch (err){
+    console.error('[GRCT] could not load submissions —', err.message, '· using the inline list');
+    store.rows = CONFIG.data.normalise(CONFIG.data.inline);
+    store.mode = 'inline (fallback)';
+  }
+  store.updatedAt = new Date();
+
+  if (CONFIG.data.mode === 'fetch' && CONFIG.data.pollMs > 0){
+    setInterval(async () => {
+      try { applyRows(await loadRows()); } catch { /* keep the last good state */ }
+    }, CONFIG.data.pollMs);
+  }
+  if (CONFIG.data.mode === 'live'){
+    store.teardown = CONFIG.data.connect(rows =>
+      applyRows(CONFIG.data.normalise(Array.isArray(rows) ? rows : [rows]),
+                { append: !Array.isArray(rows) }));
+  }
+}
+
+/* ============================================================================
+ *  COLOUR — a distinct shade of orange per trekker.
+ *  Golden-ratio stepping through a bounded oklch window keeps neighbours far
+ *  apart while everything stays recognisably GRCT orange. Keyed to the order
+ *  a name first appears, so nobody's colour shifts as data grows.
+ * ========================================================================= */
+function oklchToHex(L, C, H){
+  const h = H * Math.PI / 180, a = C * Math.cos(h), b = C * Math.sin(h);
+  const l_ = L + 0.3963377774*a + 0.2158037573*b;
+  const m_ = L - 0.1055613458*a - 0.0638541728*b;
+  const s_ = L - 0.0894841775*a - 1.2914855480*b;
+  const l = l_**3, m = m_**3, s = s_**3;
+  return '#' + [ 4.0767416621*l - 3.3077115913*m + 0.2309699292*s,
+                -1.2684380046*l + 2.6097574011*m - 0.3413193965*s,
+                -0.0041960863*l - 0.7034186147*m + 1.7076147010*s ].map(u => {
+    u = u <= 0.0031308 ? 12.92*u : 1.055*Math.pow(Math.max(u,0), 1/2.4) - 0.055;
+    return Math.round(Math.min(1, Math.max(0, u)) * 255).toString(16).padStart(2,'0');
+  }).join('');
+}
+const PHI = 0.6180339887498949;
+function shadeFor(i){
+  const t = (i * PHI) % 1;
+  return oklchToHex(0.615 + t*0.215, 0.175 - t*0.040, 46 + t*38);
+}
+
+/* ============================================================================
+ *  THE ROUTE  —  decode the road, measure it, address it by kilometre
+ * ========================================================================= */
+const $ = id => document.getElementById(id);
+const nf = n => n.toLocaleString('en-GB');
+const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function metres(a, b){                                   // haversine, [lat,lng]
+  const p = Math.PI/180, [y1,x1] = a, [y2,x2] = b;
+  return 6371008.8 * 2 * Math.asin(Math.sqrt(
+    Math.sin((y2-y1)*p/2)**2 +
+    Math.cos(y1*p)*Math.cos(y2*p)*Math.sin((x2-x1)*p/2)**2));
+}
+
+const ROUTE = (() => {
+  const legs = ROUTE_GEOMETRY.map((L, i) => {
+    const pts = [];
+    let x = 0, y = 0;
+    for (let k = 0; k < L.d.length; k += 2){
+      x += L.d[k]; y += L.d[k+1];
+      pts.push([y/1e5, x/1e5]);                          // Leaflet order: lat, lng
+    }
+    const cum = [0];
+    for (let k = 1; k < pts.length; k++) cum.push(cum[k-1] + metres(pts[k-1], pts[k]));
+    return { from:L.from, to:L.to, km:L.km, index:i, pts, cum, len:cum[cum.length-1] };
+  });
+  let acc = 0;
+  for (const l of legs){ l.startKm = acc; acc += l.km; l.endKm = acc; }
+
+  /* Published leg distances drive the kilometre scale; the road drives the
+     shape. Each leg maps its own km span onto its own drawn length. */
+  const at = km => {
+    const k = Math.max(0, Math.min(acc, km));
+    let leg = legs[legs.length-1];
+    for (const l of legs) if (k < l.endKm){ leg = l; break; }
+    const t = leg.km ? (k - leg.startKm) / leg.km : 0;
+    const target = Math.max(0, Math.min(1, t)) * leg.len;
+    let lo = 0, hi = leg.cum.length - 1;
+    while (lo < hi - 1){ const mid = (lo + hi) >> 1; (leg.cum[mid] <= target ? lo = mid : hi = mid); }
+    const span = leg.cum[hi] - leg.cum[lo];
+    const f = span > 0 ? (target - leg.cum[lo]) / span : 0;
+    const a = leg.pts[lo], b = leg.pts[hi];
+    return { lat: a[0] + (b[0]-a[0])*f, lng: a[1] + (b[1]-a[1])*f, leg };
+  };
+  const all = legs.flatMap(l => l.pts);
+  return { legs, totalKm: acc, at, all,
+           bounds: L.latLngBounds(all.map(p => L.latLng(p[0], p[1]))) };
+})();
+
+const GOAL = CONFIG.goalKm;
+
+const ACTIVITY = {
+  walk:  { label:'Walking',    icon:'M13 4.2a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3M9 21l2-5-2.2-2 .7-4L7 11.5 5.5 15M14 21l-1.5-5-1.7-2.6.9-4.2 2.3 2.3 3 .9' },
+  run:   { label:'Running',    icon:'M14.5 4.2a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3M7 21l3.2-4.5-2-3.2.9-4.8L6.5 11 4 12.5M13.5 21l-.8-5.5-2.5-2.8 1-4.4 2.8 2.6 3.5.7' },
+  cycle: { label:'Cycling',    icon:'M5.5 18.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m13 0a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7M9 8h4l3 7M9 8 6 15m6-7-2-3' },
+  swim:  { label:'Swimming',   icon:'M2 17.5c1.6 0 1.6 1.2 3.2 1.2s1.6-1.2 3.2-1.2 1.6 1.2 3.2 1.2 1.6-1.2 3.2-1.2 1.6 1.2 3.2 1.2M6 13l4-4M9.5 5.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3M10 9l4 3' },
+  hike:  { label:'Hiking',     icon:'M13 4.2a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3M8 21l2.5-6L8 12l1-4-3 2M19 21V9M14 21l-1-6 2-5 2.5 3' },
+  scoot: { label:'Scootering', icon:'M5.5 19a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5m13 0a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5M8 16.5h8M16 5h2l.8 9M14 5h4' },
+  other: { label:'Other',      icon:'M12 21V7M7 12l5-5 5 5' }
+};
+const actOf = a => ACTIVITY[a] ? a : 'other';
+
+/* ============================================================================
+ *  DERIVED STATE
+ * ========================================================================= */
+const state = { people: [], spans: [], total: 0, complete: false, byActivity: [] };
+
+function applyRows(rows, opts = {}){
+  store.rows = opts.append ? store.rows.concat(rows) : rows;
+  store.updatedAt = new Date();
+  recompute();
+  render();
+}
+
+function recompute(){
+  const byName = new Map();
+  let acc = 0;
+  state.spans = store.rows.map(r => {
+    const from = acc; acc += r.km; const to = acc;
+    if (!byName.has(r.name)) byName.set(r.name, { name:r.name, km:0, rows:[], first:byName.size, from, to });
+    const p = byName.get(r.name);
+    p.km += r.km; p.rows.push(r); p.from = Math.min(p.from, from); p.to = Math.max(p.to, to);
+    return { ...r, from, to, person:p };
+  });
+
+  state.total = acc;
+  state.complete = acc >= GOAL;
+
+  /* Colour is written onto the person object itself — spans hold references
+     to these same objects, and the map reads the colour through them. */
+  const people = [...byName.values()];
+  for (const p of people) p.colour = shadeFor(p.first);
+  state.people = people.slice().sort((a, b) => b.km - a.km);
+
+  const acts = new Map();
+  for (const r of store.rows) acts.set(actOf(r.activity), (acts.get(actOf(r.activity)) || 0) + r.km);
+  state.byActivity = [...acts.entries()]
+    .map(([k, km]) => ({ key:k, ...ACTIVITY[k], km })).sort((a, b) => b.km - a.km);
+
+  for (const leg of ROUTE.legs){
+    leg.done = Math.max(0, Math.min(leg.km, state.total - leg.startKm));
+    leg.pct  = leg.km ? leg.done / leg.km : 0;
+  }
+}
+
+/** Which contribution covers this kilometre mark? Binary search over spans. */
+function ownerAt(km){
+  const s = state.spans;
+  let lo = 0, hi = s.length - 1;
+  while (lo <= hi){
+    const mid = (lo + hi) >> 1;
+    if (km < s[mid].from) hi = mid - 1;
+    else if (km >= s[mid].to) lo = mid + 1;
+    else return s[mid];
+  }
+  return null;
+}
+
+/* ============================================================================
+ *  THE MAP
+ * ========================================================================= */
+let map, tiles, dotLayer, dotRenderer, casing, wpMarkers = [];
+let dots = [];                       // the markers currently on screen
+let highlight = null;                // trekker name being highlighted
+let sweepKm = null;                  // finale: only light up to this kilometre
+
+const lodFor = z => CONFIG.map.lod.find(t => z <= t.z) || CONFIG.map.lod.at(-1);
+const fmtLod = km => km >= 1 ? `${km} km` : `${Math.round(km*1000)} m`;
+
+function tileUrl(){
+  const dark = (document.documentElement.dataset.theme
+    || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')) === 'dark';
+  return dark ? CONFIG.map.tiles.dark : CONFIG.map.tiles.light;
+}
+
+function initMap(){
+  map = L.map('map', {
+    preferCanvas: true,
+    zoomControl: false,
+    attributionControl: true,
+    minZoom: CONFIG.map.minZoom,
+    maxZoom: CONFIG.map.maxZoom,
+    zoomSnap: 1,                       // integer zoom keeps raster tiles crisp
+    scrollWheelZoom: false,            // opt-in, so the page still scrolls over the map
+    wheelPxPerZoomLevel: 110,
+    maxBounds: ROUTE.bounds.pad(1.6),
+    maxBoundsViscosity: 0.7
+  });
+
+  /* Set a view before adding a single layer: a layer added to a viewless map
+     makes its renderer call getBounds(), which throws. The deferred fit below
+     re-runs this once the container has a real width. */
+  map.fitBounds(ROUTE.bounds, { padding:[38, 38] });
+
+  tiles = L.tileLayer(tileUrl(), {
+    attribution: CONFIG.map.attribution,
+    maxZoom: CONFIG.map.maxZoom,
+    detectRetina: false,
+    subdomains: 'abc',
+    crossOrigin: true
+  }).addTo(map);
+  document.body.classList.toggle('tint-tiles', !!CONFIG.map.filterTiles);
+
+  L.control.zoom({ position:'topright' }).addTo(map);
+  L.control.scale({ position:'bottomleft', imperial:false, maxWidth:120 }).addTo(map);
+
+  dotRenderer = L.canvas({ padding: 0.5 });
+
+  casing = L.polyline(ROUTE.all, {
+    renderer: dotRenderer, color:'#7c8b99', weight:1.4, opacity:.28, interactive:false
+  }).addTo(map);
+
+  dotLayer = L.layerGroup().addTo(map);
+
+  drawWaypoints();
+
+  /* The card can be laid out after this runs (web fonts, a collapsed tab, a
+     hidden panel), which would leave Leaflet sized 0 and stuck at maxZoom.
+     Re-measure whenever the container's box actually changes, and hold off
+     the initial fit until it has a real width. */
+  let fitted = false;
+  const settle = () => {
+    if (!map) return;
+    map.invalidateSize({ animate:false });
+    const { x, y } = map.getSize();
+    if (!fitted && x > 40 && y > 40){
+      fitted = true;
+      map.fitBounds(ROUTE.bounds, { padding:[38, 38] });
+    }
+    renderDots(); updateHud();
+  };
+  requestAnimationFrame(settle);
+  if (window.ResizeObserver) new ResizeObserver(settle).observe($('map'));
+  addEventListener('resize', settle);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(settle);
+
+  map.on('moveend zoomend', () => { renderDots(); updateHud(); });
+  map.on('zoomstart movestart', hideTip);
+  map.on('mouseout', hideTip);
+
+  bindScrollEtiquette();
+}
+
+/* The map fills the page width, so by default it would swallow wheel scrolling
+   and one-finger drags. Wheel zoom turns on once you click into the map (and
+   off again when you leave); on touch, one finger scrolls the page and two
+   fingers drive the map — the same bargain Google Maps embeds strike. */
+function bindScrollEtiquette(){
+  const box = map.getContainer();
+  const hint = $('map-hint');
+  const touch = L.Browser.touch && !L.Browser.pointer ? true : matchMedia('(pointer: coarse)').matches;
+
+  const say = t => { hint.textContent = t; hint.hidden = !t; };
+  say(touch ? 'Use two fingers to move the map' : 'Click the map to zoom with your scroll wheel');
+
+  if (touch){
+    map.dragging.disable();
+    box.addEventListener('touchstart', e => {
+      if (e.touches.length >= 2){ map.dragging.enable(); say(''); }
+    }, { passive:true });
+    box.addEventListener('touchend', () => { if (!map._animatingZoom) map.dragging.disable(); }, { passive:true });
+  } else {
+    map.on('click focus', () => { map.scrollWheelZoom.enable(); say(''); });
+    box.addEventListener('mouseleave', () => { map.scrollWheelZoom.disable(); });
+    box.addEventListener('mouseenter', () => {
+      if (!map.scrollWheelZoom.enabled()) say('Click the map to zoom with your scroll wheel');
+    });
+  }
+}
+
+function pinIcon(name, side, flag){
+  const cup = `<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round">
+    <path d="M8 8.5a4 4 0 0 0 8 0z"/><path d="M5.6 10.2q-.9 3.2 1.9 4.2"/><path d="M18.4 10.2q.9 3.2-1.9 4.2"/></svg>`;
+  const flagHtml = flag
+    ? `<span class="flag">${['#1f8454','#fbb040','#1f8454','#fbb040','#1f8454','#fbb040']
+        .map(c => `<i style="background:${c}"></i>`).join('')}</span>` : '';
+  const cum = name === ROUTE.legs[0].from ? 0 : (ROUTE.legs.find(l => l.to === name)?.endKm ?? 0);
+  return L.divIcon({
+    className: '', iconSize: [0, 0],
+    html: `<div class="wp" data-side="${side}"${flag ? ` data-flag="${flag}"` : ''}>
+             ${flagHtml}<span class="pin">${cup}</span>
+             <span class="lab">${name}<em>${flag === 'start' ? 'Start · ' : flag === 'finish' ? 'Finish · ' : ''}${nf(cum)} km</em></span>
+           </div>`
+  });
+}
+
+function drawWaypoints(){
+  const towns = [ROUTE.legs[0].from, ...ROUTE.legs.map(l => l.to)];
+  wpMarkers.forEach(m => m.remove()); wpMarkers = [];
+  towns.forEach((name, i) => {
+    const p = i === 0 ? ROUTE.at(0) : ROUTE.at(ROUTE.legs[i-1].endKm);
+    const flag = i === 0 ? 'start' : i === towns.length - 1 ? 'finish' : null;
+    const m = L.marker([p.lat, p.lng], {
+      icon: pinIcon(name, CONFIG.waypointLabels[name] || 'right', flag),
+      keyboard: false, riseOnHover: true, zIndexOffset: 400
+    }).addTo(map);
+    m.on('click', () => {
+      const leg = ROUTE.legs.find(l => l.from === name) || ROUTE.legs.at(-1);
+      fitKm(leg.startKm, leg.endKm);
+    });
+    wpMarkers.push(m);
+  });
+}
+
+/** Rebuild the visible dots for the current zoom and viewport. */
+let dimColour = '#94a3ae';
+const readDimColour = () => {
+  dimColour = getComputedStyle(document.documentElement).getPropertyValue('--dot-dim').trim() || dimColour;
+};
+
+function renderDots(){
+  if (!map || !map._loaded) return;
+  const lod = lodFor(map.getZoom());
+  casing.setStyle({ weight: map.getZoom() >= 11 ? 2.4 : 1.4, opacity: map.getZoom() >= 11 ? .4 : .28 });
+  const b = map.getBounds().pad(0.45);
+  const step = lod.km, n = Math.ceil(GOAL / step);
+  const next = [];
+
+  dotLayer.clearLayers();
+  dots = [];
+
+  for (let i = 0; i < n; i++){
+    const kmMid = (i + 0.5) * step;
+    const p = ROUTE.at(kmMid);
+    if (!b.contains([p.lat, p.lng])) continue;
+
+    const span  = ownerAt(kmMid);
+    const swept = sweepKm !== null && kmMid <= sweepKm;
+    const lit   = swept || (sweepKm === null && !!span);
+    const owner = span ? span.person : null;
+    const dim   = highlight && owner && owner.name !== highlight;
+
+    const colour = lit ? (owner ? owner.colour : shadeFor(i % 11)) : dimColour;
+
+    const m = L.circleMarker([p.lat, p.lng], {
+      renderer: dotRenderer,
+      radius: lod.r,
+      fillColor: colour,
+      fillOpacity: dim ? 0.16 : (lit ? 1 : 0.88),
+      color: '#ffffff',
+      weight: lod.r >= 3.4 ? 1 : 0,
+      opacity: dim ? 0.10 : (lit ? 0.85 : 0.55),
+      interactive: true,
+      bubblingMouseEvents: false
+    });
+    m._d = { i, kmMid, kmFrom:i*step, kmTo:(i+1)*step, step, span, owner, leg:p.leg, lat:p.lat, lng:p.lng };
+    m.on('mouseover', () => { showTip(m); if (m._d.owner) setHighlight(m._d.owner.name, true); });
+    m.on('mouseout',  () => { hideTip(); if (m._d.owner) setHighlight(null, true); });
+    next.push(m);
+  }
+  next.forEach(m => m.addTo(dotLayer));
+  dots = next;
+}
+
+function updateHud(){
+  if (!map || !map._loaded) return;
+  const lod = lodFor(map.getZoom());
+  $('lod-km').textContent = fmtLod(lod.km);
+  const tiers = CONFIG.map.lod.length;
+  const idx = CONFIG.map.lod.indexOf(lod);
+  $('zbars').innerHTML = Array.from({ length: tiers }, (_, k) =>
+    `<i class="${k <= idx ? 'on' : ''}" style="height:${3 + k*1.15}px"></i>`).join('');
+
+  const c = map.getCenter();
+  let best = null, bestD = Infinity;
+  for (let km = 0; km <= GOAL; km += 2){
+    const p = ROUTE.at(km);
+    const d = (p.lat - c.lat)**2 + (p.lng - c.lng)**2;
+    if (d < bestD){ bestD = d; best = { km, p }; }
+  }
+  $('hud-view').innerHTML = map.getZoom() <= 7
+    ? `<b>Wellington &rarr; Port Elizabeth</b> · the whole route`
+    : `Near <b>km ${nf(Math.round(best.km))}</b> · ${best.p.leg.from} &rarr; ${best.p.leg.to}`;
+  $('dot-scale').textContent =
+    `1 dot = ${fmtLod(lod.km)} · ${dots.filter(d => d._d.owner).length} lit of ${dots.length} in view`;
+}
+
+function fitKm(from, to){
+  if (!map || !map._loaded || map.getSize().x < 40) return;
+  const pts = [];
+  const step = Math.max(0.5, (to - from) / 90);
+  for (let km = from; km <= to; km += step){ const p = ROUTE.at(km); pts.push([p.lat, p.lng]); }
+  const e = ROUTE.at(to); pts.push([e.lat, e.lng]);
+  map.flyToBounds(L.latLngBounds(pts), { padding:[60, 60], animate: !still(), duration: 0.85, maxZoom: 13 });
+}
+
+function setHighlight(name, skipLegend){
+  if (highlight === name) return;
+  highlight = name;
+  for (const m of dots){
+    const d = m._d;
+    const dim = name && d.owner && d.owner.name !== name;
+    const off = name && !d.owner;
+    m.setStyle({ fillOpacity: dim ? 0.16 : off ? 0.30 : (d.owner ? 1 : 0.88),
+                 opacity: dim || off ? 0.10 : (d.owner ? 0.85 : 0.55) });
+  }
+  if (!skipLegend) return;
+  document.querySelectorAll('#people .li').forEach(li =>
+    li.toggleAttribute('data-hovered', !!name && li.dataset.name === name));
+}
+
+/* ============================================================================
+ *  TOOLTIP
+ * ========================================================================= */
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmtDate = s => { if (!s) return '—'; const d = new Date(s);
+  return isNaN(d) ? s : d.toLocaleDateString('en-GB', { day:'numeric', month:'short' }); };
+const kmLabel = (a, b) => {
+  const dp = (b - a) < 1 ? 2 : (b - a) < 10 ? 1 : 0;
+  return `${a.toFixed(dp)}–${b.toFixed(dp)} km`;
+};
+
+function showTip(m){
+  const tip = $('tt'), d = m._d;
+  const pt = map.latLngToContainerPoint([d.lat, d.lng]);
+  tip.innerHTML = d.owner
+    ? `<div class="tt-n"><span class="sw" style="background:${d.owner.colour}"></span>${esc(d.owner.name)}</div>
+       <dl><dt>This stretch</dt><dd>${kmLabel(d.kmFrom, d.kmTo)}</dd>
+           <dt>Leg</dt><dd style="font-family:var(--font-sans);font-size:10.5px">${esc(d.leg.from)} &rarr; ${esc(d.leg.to)}</dd>
+           <dt>${esc(ACTIVITY[actOf(d.span.activity)].label)}</dt><dd>${nf(d.span.km)} km</dd>
+           <dt>Logged</dt><dd>${fmtDate(d.span.date)}</dd></dl>
+       ${d.span.note ? `<div style="margin-top:7px;font-size:10.5px;color:var(--chart-tooltip-muted);font-style:italic">“${esc(d.span.note)}”</div>` : ''}`
+    : `<div class="tt-n"><span class="sw" style="background:var(--dot-dim)"></span>Not yet covered</div>
+       <dl><dt>This stretch</dt><dd>${kmLabel(d.kmFrom, d.kmTo)}</dd>
+           <dt>Leg</dt><dd style="font-family:var(--font-sans);font-size:10.5px">${esc(d.leg.from)} &rarr; ${esc(d.leg.to)}</dd>
+           <dt>Needs</dt><dd>${nf(Math.max(0, Math.round(d.kmFrom - state.total)))} km more</dd></dl>`;
+  tip.style.left = pt.x + 'px';
+  tip.style.top  = (pt.y - 10) + 'px';
+  tip.classList.add('on');
+}
+function hideTip(){ $('tt').classList.remove('on'); }
+
+/* ============================================================================
+ *  PANELS
+ * ========================================================================= */
+const still = () => reduced() || document.hidden;   // no animation frames available
+const paint = fn => document.hidden ? fn() : requestAnimationFrame(fn);
+
+function countUp(node, to, opts = {}){
+  const { dp = 0, dur = 1.1 } = opts;
+  const from = parseFloat((node.textContent || '0').replace(/,/g,'')) || 0;
+  if (still() || from === to){
+    node.textContent = to.toLocaleString('en-GB',{minimumFractionDigits:dp,maximumFractionDigits:dp}); return;
+  }
+  Motion.animate(from, to, { duration:dur, ease:[.16,1,.3,1],
+    onUpdate: v => node.textContent = v.toLocaleString('en-GB',{minimumFractionDigits:dp,maximumFractionDigits:dp}) });
+}
+
+function renderStats(){
+  const pct = Math.min(100, state.total / GOAL * 100);
+  countUp($('s-km'), Math.round(state.total));
+  countUp($('s-pct'), Math.round(pct * 10) / 10, { dp:1 });
+  countUp($('s-people'), state.people.length);
+  const left = GOAL - state.total;
+  countUp($('s-left'), Math.abs(Math.round(left)));
+  $('s-left-k').textContent = left >= 0 ? 'Still to go' : 'Kilometres beyond the goal';
+  const bar = $('s-bar');
+  if (still()) bar.style.width = pct + '%';
+  else Motion.animate(bar, { width:['0%', pct + '%'] }, { duration:1.2, ease:[.16,1,.3,1] });
+
+  const head = ROUTE.at(Math.min(state.total, GOAL));
+  const tag = $('map-tag');
+  if (state.complete){ tag.textContent = 'Route complete'; tag.className = 'tag done'; }
+  else { tag.textContent = 'On leg ' + (head.leg.index + 1) + ' of 6'; tag.className = 'tag now'; }
+
+  $('map-sub').textContent = state.complete
+    ? 'All 1,000 km covered — thank you'
+    : `${nf(Math.round(state.total))} km of 1,000 km · currently between ${head.leg.from} and ${head.leg.to}`;
+
+  $('sw-live').innerHTML = state.people.slice(0, 6).map(p =>
+    `<i style="background:${p.colour}"></i>`).join('') + ' <span>A shade for every trekker</span>';
+}
+
+function renderLegs(){
+  $('legs').innerHTML = ROUTE.legs.map(leg => {
+    const pct = Math.round(leg.pct * 100);
+    const status = leg.pct >= 1 ? '<span class="tag done">Done</span>'
+                 : leg.pct > 0  ? '<span class="tag now">In progress</span>'
+                 : '<span class="tag">Ahead</span>';
+    return `<div class="leg" data-leg="${leg.index}" title="Zoom to this leg">
+      <div class="leg-n">${String(leg.index + 1).padStart(2,'0')}</div>
+      <div>
+        <div class="leg-t">${esc(leg.from)} <s>→</s> ${esc(leg.to)} ${status}</div>
+        <div class="leg-tr"><i data-pct="${pct}"></i></div>
+      </div>
+      <div class="leg-v"><b>${nf(Math.round(leg.done))}</b> / ${nf(leg.km)} km<em>${pct}%</em></div>
+    </div>`;
+  }).join('');
+  paint(() => document.querySelectorAll('#legs .leg-tr i')
+    .forEach(i => i.style.width = i.dataset.pct + '%'));
+  document.querySelectorAll('#legs .leg').forEach(row => row.addEventListener('click', () => {
+    const leg = ROUTE.legs[+row.dataset.leg];
+    fitKm(leg.startKm, leg.endKm);
+  }));
+}
+
+function renderPeople(){
+  const max = state.people[0]?.km || 1;
+  $('people').innerHTML = state.people.map(p => {
+    const share = p.km / Math.max(state.total, 1) * 100;
+    return `<div class="li" data-name="${esc(p.name)}" data-from="${p.from}" data-to="${p.to}" title="Zoom to this stretch">
+      <div class="li-top">
+        <span class="li-mk" style="background:${p.colour}"></span>
+        <span class="li-nm">${esc(p.name)}</span>
+        <span class="li-vl"><b>${nf(p.km)}</b><small> km</small></span>
+      </div>
+      <div class="li-tr"><i style="background:${p.colour}" data-w="${p.km / max * 100}"></i></div>
+      <div class="li-mt"><span>${share.toFixed(1)}% of total</span><span>·</span>
+        <span>km ${nf(Math.round(p.from))}–${nf(Math.round(p.to))}</span></div>
+    </div>`;
+  }).join('');
+  paint(() => document.querySelectorAll('#people .li-tr i')
+    .forEach(i => i.style.width = i.dataset.w + '%'));
+  document.querySelectorAll('#people .li').forEach(li => {
+    li.addEventListener('mouseenter', () => { li.setAttribute('data-hovered',''); setHighlight(li.dataset.name); });
+    li.addEventListener('mouseleave', () => { li.removeAttribute('data-hovered'); setHighlight(null); });
+    li.addEventListener('click', () => fitKm(+li.dataset.from, +li.dataset.to));
+  });
+}
+
+function renderActs(){
+  const max = state.byActivity[0]?.km || 1;
+  $('acts').innerHTML = state.byActivity.map((a, i) => `
+    <div class="act">
+      <div class="act-l">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"
+             style="color:var(--muted-foreground);flex:none"><path d="${a.icon}"/></svg>
+        ${a.label}
+      </div>
+      <div class="act-b"><i style="background:var(--chart-${(i % 5) + 1})" data-w="${a.km / max * 100}"></i></div>
+      <div class="act-v">${nf(a.km)} km</div>
+    </div>`).join('');
+  paint(() => document.querySelectorAll('#acts .act-b i')
+    .forEach(i => i.style.width = i.dataset.w + '%'));
+}
+
+function renderFeed(){
+  $('feed').innerHTML = [...state.spans].reverse().slice(0, 14).map(r => {
+    const init = r.name.split(/\s+/).map(w => w[0]).join('').slice(0,2).toUpperCase();
+    return `<div class="fi" data-from="${r.from}" data-to="${r.to}" title="Zoom to this stretch">
+      <span class="fav" style="background:${r.person.colour}">${esc(init)}</span>
+      <div><div class="fi-n">${esc(r.name)}</div>
+        <div class="fi-s">${esc(ACTIVITY[actOf(r.activity)].label)} · km ${nf(Math.round(r.from))}–${nf(Math.round(r.to))}</div></div>
+      <div class="fi-v">+${nf(r.km)}<em>${fmtDate(r.date)}</em></div>
+    </div>`;
+  }).join('');
+  document.querySelectorAll('#feed .fi').forEach(f =>
+    f.addEventListener('click', () => fitKm(+f.dataset.from, +f.dataset.to)));
+}
+
+function renderSource(){
+  const pill = $('src-pill'), sample = CONFIG.data.mode === 'inline' && CONFIG.data.sample;
+  $('src-txt').textContent = sample ? 'Sample data'
+    : CONFIG.data.mode === 'live'  ? 'Live feed'
+    : CONFIG.data.mode === 'fetch' ? 'Auto-updating'
+    : 'Submissions to trek@grct.org.uk';
+  pill.className = 'pill' + (CONFIG.data.mode === 'live' ? ' live' : '') + (sample ? ' sample' : '');
+  if (store.updatedAt){
+    $('upd-pill').hidden = false;
+    $('upd-txt').textContent = store.updatedAt.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
+  }
+  $('foot-src').textContent = `${store.rows.length} submissions · source: ${store.mode}`;
+}
+
+let firstPaint = true, wasComplete = false;
+function render(){
+  renderDots(); updateHud();
+  renderStats(); renderLegs(); renderPeople(); renderActs(); renderFeed(); renderSource();
+  if (state.complete && CONFIG.finale.autoPlayWhenComplete && (firstPaint || !wasComplete))
+    queueFinale(!firstPaint);
+  wasComplete = state.complete;
+  firstPaint = false;
+}
+
+/* ============================================================================
+ *  THE FINISH CELEBRATION
+ * ========================================================================= */
+const CONFETTI = ['#1f8454','#2bb673','#fbb040','#e07b1f','#ffd580','#ffffff'];
+const FX = new WeakMap();
+
+function burst(canvas, cx, cy, n = 170, spread = 1){
+  let st = FX.get(canvas);
+  if (!st){ st = { parts:[], raf:0, ctx:canvas.getContext('2d') }; FX.set(canvas, st); }
+  const dpr = Math.min(devicePixelRatio || 1, 2);
+  const r = canvas.getBoundingClientRect();
+  const W = Math.round(r.width * dpr), H = Math.round(r.height * dpr);
+  if (canvas.width !== W || canvas.height !== H){ canvas.width = W; canvas.height = H; }
+  st.w = r.width; st.h = r.height;
+  st.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  for (let i = 0; i < n; i++){
+    const a = Math.random() * Math.PI * 2, v = (4 + Math.random() * 11) * spread;
+    st.parts.push({ x:cx, y:cy, vx:Math.cos(a)*v, vy:Math.sin(a)*v - 4,
+      w:5 + Math.random()*8, h:4 + Math.random()*6, rot:Math.random()*Math.PI,
+      vr:(Math.random()-.5)*.32, c:CONFETTI[(Math.random()*CONFETTI.length)|0], life:1 });
+  }
+  if (st.raf) return;
+  let t0 = performance.now();
+  const frame = t => {
+    const dt = Math.min((t - t0) / 16.67, 3); t0 = t;
+    st.ctx.clearRect(0, 0, st.w, st.h);
+    const keep = [];
+    for (const b of st.parts){
+      b.vy += 0.34 * dt; b.vx *= 0.992; b.x += b.vx * dt; b.y += b.vy * dt;
+      b.rot += b.vr * dt; b.life -= 0.0042 * dt;
+      if (b.life <= 0 || b.y > st.h + 60) continue;
+      keep.push(b);
+      st.ctx.save(); st.ctx.translate(b.x, b.y); st.ctx.rotate(b.rot);
+      st.ctx.globalAlpha = Math.max(0, Math.min(1, b.life * 1.7));
+      st.ctx.fillStyle = b.c; st.ctx.fillRect(-b.w/2, -b.h/2, b.w, b.h); st.ctx.restore();
+    }
+    st.parts = keep;
+    if (keep.length) st.raf = requestAnimationFrame(frame);
+    else { st.raf = 0; st.ctx.clearRect(0, 0, st.w, st.h); }
+  };
+  st.raf = requestAnimationFrame(frame);
+}
+
+function queueFinale(force){
+  if (!force && !CONFIG.finale.everyVisit){
+    try { if (sessionStorage.getItem('grct-finale')) return; sessionStorage.setItem('grct-finale','1'); } catch {}
+  }
+  setTimeout(() => playFinale(), 500);
+}
+
+let finaleRunning = false;
+async function playFinale(preview = false){
+  if (finaleRunning) return;
+  finaleRunning = true;
+  hideTip();
+
+  $('mapcard').scrollIntoView({ behavior: reduced() ? 'auto' : 'smooth', block:'center' });
+  map.flyToBounds(ROUTE.bounds, { padding:[38,38], animate: !still(), duration: 0.8 });
+  await new Promise(r => setTimeout(r, reduced() ? 0 : 900));
+
+  /* 1 — light the whole road, Wellington to Port Elizabeth */
+  if (reduced()){ sweepKm = GOAL; renderDots(); }
+  else {
+    await Motion.animate(0, GOAL, { duration: 1.9, ease:[.35,0,.25,1],
+      onUpdate: v => { sweepKm = v; renderDots(); } }).finished;
+  }
+
+  /* 2 — confetti from Port Elizabeth */
+  if (!reduced()){
+    const pe = ROUTE.at(GOAL);
+    const pt = map.latLngToContainerPoint([pe.lat, pe.lng]);
+    burst($('confetti'), pt.x, pt.y, 150, 1);
+  }
+
+  /* 3 — the card */
+  const fin = $('finale'), card = $('fin-card'), fc = $('fin-canvas');
+  fin.classList.add('on');
+  $('fin-h').textContent = preview && !state.complete ? 'That is where we’re heading.' : 'We made it.';
+  $('fin-p').textContent = preview && !state.complete
+    ? 'A preview of the celebration that will greet every visitor the moment the trek reaches 1,000 km.'
+    : 'The Great Garden Route Trek is complete. Thank you for walking every step with us.';
+  countUp($('fin-n'), state.people.length);
+  countUp($('fin-s'), store.rows.length);
+  countUp($('fin-d'), ROUTE.legs.filter(l => l.pct >= 1).length);
+
+  if (reduced()){
+    card.style.opacity = 1;
+    $('fin-km').textContent = nf(Math.max(state.total, GOAL));
+  } else {
+    fc.classList.add('on');
+    Motion.animate(card, { opacity:[0,1], scale:[.9,1], y:[26,0] }, { duration:.62, ease:[.22,1,.36,1] });
+    countUp($('fin-km'), Math.round(Math.max(state.total, preview ? GOAL : state.total)), { dur:1.5 });
+    const r = fc.getBoundingClientRect();
+    setTimeout(() => burst(fc, r.width * .5,  r.height * .46, 230, 1.25), 220);
+    setTimeout(() => burst(fc, r.width * .16, r.height * .34, 110, 1), 700);
+    setTimeout(() => burst(fc, r.width * .84, r.height * .34, 110, 1), 980);
+  }
+  $('fin-close').focus({ preventScroll:true });
+  finaleRunning = false;
+}
+
+function closeFinale(){
+  const fin = $('finale'), card = $('fin-card');
+  const done = () => {
+    fin.classList.remove('on'); $('fin-canvas').classList.remove('on'); card.style.opacity = 0;
+    sweepKm = null; renderDots(); updateHud();
+  };
+  if (reduced()) done();
+  else Motion.animate(card, { opacity:0, scale:.95, y:14 }, { duration:.3, ease:'easeIn' }).finished.then(done);
+}
+
+/* ============================================================================
+ *  ENTRANCE, THEME, PUBLIC API
+ * ========================================================================= */
+function entrance(){
+  if (reduced()) return;
+  if (document.hidden){            // retry once the tab is actually looked at
+    addEventListener('visibilitychange', () => { if (!document.hidden) entrance(); }, { once:true });
+    return;
+  }
+  Motion.animate('.badge20, h1.title, .lede', { opacity:[0,1], y:[16,0] },
+    { duration:.62, delay: Motion.stagger(.08), ease:[.22,1,.36,1] });
+  Motion.animate('.stats > div', { opacity:[0,1], y:[14,0] },
+    { duration:.55, delay: Motion.stagger(.06, { startDelay:.2 }), ease:[.22,1,.36,1] });
+  Motion.inView('.grid2 .card, .grid3 .card',
+    e => Motion.animate(e.target, { opacity:[0,1], y:[18,0] }, { duration:.55, ease:[.22,1,.36,1] }),
+    { amount:.12 });
+}
+
+function initTheme(){
+  const key = 'grct-theme';
+  let saved = null; try { saved = localStorage.getItem(key); } catch {}
+  if (saved) document.documentElement.dataset.theme = saved;
+  const apply = () => { readDimColour(); if (tiles) tiles.setUrl(tileUrl()); renderDots(); };
+  $('theme').addEventListener('click', () => {
+    const cur = document.documentElement.dataset.theme
+      || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    const next = cur === 'dark' ? 'light' : 'dark';
+    document.documentElement.dataset.theme = next;
+    try { localStorage.setItem(key, next); } catch {}
+    apply();
+  });
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    if (!document.documentElement.dataset.theme) apply();
+  });
+}
+
+window.GRCTTrek = {
+  /** Append one submission (or an array) and re-light the map. */
+  add(rows){ applyRows(CONFIG.data.normalise(Array.isArray(rows) ? rows : [rows]), { append:true });
+             return store.rows.length; },
+  /** Replace the whole dataset. */
+  set(rows){ applyRows(CONFIG.data.normalise(rows)); return store.rows.length; },
+  /** Re-pull from CONFIG.data.endpoint. */
+  async refresh(){ applyRows(await loadRows()); return store.rows.length; },
+  get state(){ return { totalKm:state.total, goalKm:GOAL, complete:state.complete,
+    trekkers:state.people.length, submissions:store.rows.length,
+    legs:ROUTE.legs.map(l => ({ from:l.from, to:l.to, km:l.km, doneKm:l.done, pct:l.pct })) }; },
+  play: playFinale,
+  /** Zoom the map to a kilometre range, e.g. GRCTTrek.zoomTo(0, 95). */
+  zoomTo: fitKm,
+  get map(){ return map; },
+  CONFIG, ROUTE
+};
+
+/* ------------------------------------------------------------------ go --- */
+(async function main(){
+  initTheme();
+  readDimColour();
+  initMap();
+  await boot();
+  recompute();
+  render();
+  entrance();
+
+  $('fit').addEventListener('click', () =>
+    map.flyToBounds(ROUTE.bounds, { padding:[38,38], animate: !still(), duration: .8 }));
+  $('replay').addEventListener('click', async () => {
+    if (reduced()) return;
+    map.flyToBounds(ROUTE.bounds, { padding:[38,38], animate: !still(), duration:.6 });
+    await new Promise(r => setTimeout(r, 700));
+    await Motion.animate(0, GOAL, { duration:1.7, ease:[.35,0,.25,1],
+      onUpdate: v => { sweepKm = v; renderDots(); } }).finished;
+    sweepKm = null; renderDots(); updateHud();
+  });
+  $('preview').addEventListener('click', () => playFinale(true));
+  $('fin-close').addEventListener('click', closeFinale);
+  $('finale').addEventListener('click', e => { if (e.target === $('finale')) closeFinale(); });
+  addEventListener('keydown', e => { if (e.key === 'Escape' && $('finale').classList.contains('on')) closeFinale(); });
+})();
+</script>
+</body>
+</html>
