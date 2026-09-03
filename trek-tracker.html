@@ -1420,7 +1420,7 @@ function entrance(){
 function initTheme(){
   const key = 'grct-theme';
   let saved = null; try { saved = localStorage.getItem(key); } catch {}
-  if (saved) document.documentElement.dataset.theme = saved;
+  if (saved) document.documentElement.dataset.theme = saved || 'light';
   const apply = () => { readDimColour(); if (tiles) tiles.setUrl(tileUrl()); renderDots(); };
   $('theme').addEventListener('click', () => {
     const cur = document.documentElement.dataset.theme
