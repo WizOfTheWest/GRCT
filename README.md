@@ -1,8 +1,10 @@
 # The Great Garden Route Trek — progress tracker
 
 A single self-contained HTML page that tracks the [Garden Route Children's Trust](https://www.grct.org.uk/)
-20th-anniversary trek: 1,000 km from Wellington to Port Elizabeth, lit up kilometre by
-kilometre as supporters send in the distances they've walked, run, cycled or swum.
+20th-anniversary trek: 1,000 km from Wellington to Port Elizabeth (or 2,000, there and back —
+one switch), lit up kilometre by kilometre as supporters send in the distances they've walked,
+run, cycled or swum, and the money they've raised towards a £10,000 target. Open right through
+the autumn, with no hard stop at the end of September.
 
 **[`trek-tracker.html`](trek-tracker.html)** — that's the whole thing. Open it in a browser,
 or drop it on the website. No build step, no server, no API keys.
@@ -17,17 +19,40 @@ or drop it on the website. No build step, no server, no API keys.
   at street level — eight tiers, with only the dots in view drawn.
 - **A shade of orange per trekker**, stable as the data grows, so you can see who covered
   which stretch. Hover to highlight; click a name, a leg or a submission to fly there.
+- **A week-by-week timeline.** A slider beside the map (under it on a phone) winds the
+  whole page back through the autumn — the road un-lights, and every number follows. Press
+  play to watch the weeks run.
+- **Money tracked alongside distance**, against a £10,000 target.
+- **One switch to double the route** — out to Port Elizabeth and all the way home again.
 - **A finish celebration** that plays on every visit once the route is complete — and the
-  moment a live submission tips it past 1,000 km while someone is watching.
+  moment a live submission tips it past the goal while someone is watching.
 - Light and dark themes, responsive down to a phone, and reduced-motion support.
+
+## The dials
+
+All at the top of `CONFIG`, near the start of the `<script>`:
+
+```js
+returnLeg: false,   // false = 1,000 km one way.  true = 2,000 km, out and back.
+goalGbp:  10000,    // the fundraising target
+returnDoublesTarget: false,   // does doubling the route double the money target too?
+```
+
+`returnLeg` is the only thing you change to extend the challenge. Flip it and the goal, every
+percentage, the kilometres remaining, the leg table, the town milestones and the finish line
+all follow. On the map the way home gets its own lane a few pixels off the road, so the two
+directions never sit on top of each other.
+
+The £10,000 target stands whichever route you run, unless you also set
+`returnDoublesTarget: true`.
 
 ## Adding submissions
 
-Today the numbers are typed in. Everything lives in `CONFIG` near the top of the `<script>`:
+Today the numbers are typed in. Everything lives in `CONFIG.data`:
 
 ```js
 CONFIG.data.inline = [
-  { name: 'Penny Fleming', km: 42, activity: 'walk', date: '2026-09-01', note: '…' },
+  { name: 'Penny Fleming', km: 42, gbp: 320, activity: 'walk', date: '2026-09-01', note: '…' },
   …
 ]
 ```
@@ -36,6 +61,10 @@ Set `CONFIG.data.sample = false` once the real list replaces the placeholder —
 the orange "Sample data" badge. `activity` is one of
 `walk · run · cycle · swim · hike · scoot · other`. Order matters: contributions are laid
 along the road in the order they appear.
+
+`gbp` is money raised — sign-up plus sponsorship. A donation with no distance behind it is
+fine: give it `km: 0` and it still counts towards the total. `date` drives the timeline, so
+it's worth filling in; undated entries are always counted, at every point on the slider.
 
 ## When it gets automated
 
@@ -53,12 +82,22 @@ Change `CONFIG.data.mode` and nothing else:
 A live system can also drive the page directly:
 
 ```js
-GRCTTrek.add({ name: 'Ada L', km: 12, activity: 'run', date: '2026-09-14' })
+GRCTTrek.add({ name: 'Ada L', km: 12, gbp: 25, activity: 'run', date: '2026-09-14' })
 GRCTTrek.set([ …all contributions… ])
 GRCTTrek.refresh()          // re-pull from the endpoint
-GRCTTrek.state              // { totalKm, complete, trekkers, legs, … }
+GRCTTrek.state              // { totalKm, gbp, goalGbp, returnLeg, week, legs, … }
 GRCTTrek.zoomTo(0, 95)      // fly the map to a kilometre range
+GRCTTrek.setWeek(3)         // rewind the page; setWeek('now') returns to live
+GRCTTrek.playWeeks()        // run the timeline
 ```
+
+## The timeline
+
+Weeks run Monday to Monday and are derived from the submissions themselves — from the
+earliest date to whichever is later of the last submission and today. Nothing to configure:
+the track simply grows a notch each week as the autumn goes on, and thins its tick marks out
+once there are more than 26. Rewinding never triggers the finish celebration, and the numbers
+stop animating while you drag so scrubbing stays responsive.
 
 ## Notes
 
@@ -70,6 +109,8 @@ GRCTTrek.zoomTo(0, 95)      // fly the map to a kilometre range
 - **Leg distances** are GRCT's published figures. The drawn road is shorter on two legs;
   each leg maps its own published kilometres onto its own drawn length, so the towns always
   sit at the right cumulative distance.
+- **Wording.** The page says the trek stays open through the autumn, with no hard stop at the
+  end of September — hero, the "Join the trek" card, and a badge by the headline.
 - **Dot granularity** is `CONFIG.map.lod`. Radii are tuned so dots never merge into a line —
   keep a tier's radius under about 0.36 × its on-screen spacing.
 

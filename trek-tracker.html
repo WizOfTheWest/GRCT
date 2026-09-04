@@ -152,6 +152,8 @@ h1.title em{font-style:normal;color:var(--grct-green-deep)}
 .pill.live i{animation:blip 1.9s ease-in-out infinite}
 @keyframes blip{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.72)}}
 .pill.sample i{background:var(--grct-orange)}
+.pill.autumn{border-color:color-mix(in oklab,var(--grct-green) 45%,var(--border))}
+.pill.autumn i{width:6px;height:6px;border-radius:50%;background:var(--grct-green);display:block}
 
 .card{background:var(--card);border:1px solid var(--border)}
 .card-hd{display:flex;align-items:flex-start;gap:14px;padding:15px 18px;border-bottom:1px solid var(--border)}
@@ -160,7 +162,9 @@ h1.title em{font-style:normal;color:var(--grct-green-deep)}
 .card-hd .spacer{flex:1}
 .card-bd{padding:18px}
 
-.stats{display:grid;grid-template-columns:repeat(4,1fr);margin:26px 0 0;border:1px solid var(--border);background:var(--card)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);margin:26px 0 0;border:1px solid var(--border);background:var(--card)}
+.stats>div{min-width:0}
+.stat-sub{margin-top:7px;font-family:var(--font-mono);font-size:10.5px;color:var(--muted-foreground)}
 .stats>div{padding:16px 18px;border-right:1px solid var(--border)}
 .stats>div:last-child{border-right:0}
 .stat-v{font-family:var(--font-mono);font-size:clamp(24px,3.4vw,34px);font-weight:600;letter-spacing:-.03em;line-height:1.1;display:flex;align-items:baseline;gap:5px}
@@ -168,10 +172,48 @@ h1.title em{font-style:normal;color:var(--grct-green-deep)}
 .stat-k{margin-top:5px;font-size:11.5px;color:var(--muted-foreground)}
 .stat-bar{margin-top:10px;height:4px;background:var(--legend-track);overflow:hidden}
 .stat-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--grct-orange-deep),var(--grct-orange))}
+.stat-bar i.green{background:linear-gradient(90deg,var(--grct-green-deep),var(--grct-green))}
 
 /* ============================================================ the map === */
 #mapcard{position:relative}
 #map{height:clamp(430px,56vh,660px);background:var(--map-bg);z-index:1}
+.mapstage{display:flex;align-items:stretch}
+.mapcol{position:relative;flex:1;min-width:0}
+
+/* ---- week-by-week timeline rail ---- */
+.timeline{width:86px;flex:none;display:flex;flex-direction:column;align-items:center;
+  gap:9px;padding:12px 8px 11px;border-left:1px solid var(--border);background:var(--card)}
+.tl-top{display:flex;flex-direction:column;align-items:center;gap:7px}
+.tl-cap{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted-foreground)}
+.tl-play{width:26px;height:26px;display:grid;place-items:center;border:1px solid var(--border);
+  background:var(--card);color:var(--foreground);transition:.15s}
+.tl-play:hover{background:var(--muted)}
+.tl-play[data-on]{background:var(--grct-orange-deep);border-color:transparent;color:#fff}
+.tl-track{position:relative;flex:1;width:8px;min-height:120px;background:var(--legend-track);
+  cursor:pointer;touch-action:none;outline:none}
+.tl-track:focus-visible{box-shadow:0 0 0 3px color-mix(in oklab,var(--grct-orange) 45%,transparent)}
+.tl-fill{position:absolute;left:0;bottom:0;width:100%;height:0;transition:height .28s cubic-bezier(.22,1,.36,1),width .28s cubic-bezier(.22,1,.36,1);
+  background:linear-gradient(180deg,var(--grct-orange),var(--grct-orange-deep))}
+.tl-ticks{position:absolute;inset:0;pointer-events:none}
+.tl-ticks i{position:absolute;left:50%;width:14px;height:1px;transform:translateX(-50%);
+  background:var(--border)}
+.timeline[data-h] .tl-ticks i{top:50%;left:auto;width:1px;height:14px;transform:translateY(-50%)}
+.tl-ticks i.on{background:color-mix(in oklab,var(--grct-orange-deep) 60%,transparent)}
+.tl-handle{position:absolute;left:50%;bottom:0;width:22px;height:22px;
+  transform:translate(-50%,50%);transition:bottom .28s cubic-bezier(.22,1,.36,1),left .28s cubic-bezier(.22,1,.36,1);
+  display:grid;place-items:center;cursor:grab;z-index:2}
+.tl-handle:active{cursor:grabbing}
+.tl-handle i{display:block;width:15px;height:15px;border-radius:50%;background:var(--card);
+  border:2.5px solid var(--grct-orange-deep);box-shadow:0 2px 7px rgb(0 0 0/.22)}
+.timeline[data-live] .tl-handle i{border-color:var(--grct-green-deep)}
+.timeline[data-live] .tl-fill{background:linear-gradient(180deg,var(--grct-green),var(--grct-green-deep))}
+.timeline[data-live] .tl-ticks i.on{background:color-mix(in oklab,var(--grct-green-deep) 55%,transparent)}
+.tl-read{display:flex;flex-direction:column;align-items:center;gap:1px;text-align:center;width:100%}
+.tl-read b{font-size:10.5px;font-weight:600;line-height:1.25}
+.tl-read span{font-size:10px;color:var(--muted-foreground)}
+.tl-now{margin-top:5px;font-family:var(--font-sans);font-size:9.5px;font-weight:600;padding:3px 6px;
+  border:1px solid var(--border);background:var(--card);color:var(--foreground)}
+.tl-now:hover{background:var(--muted)}
 #map.dragging{cursor:grabbing}
 .leaflet-container{font-family:var(--font-sans);background:var(--map-bg)}
 body.tint-tiles .leaflet-tile-pane{filter:var(--tile-filter)}
@@ -268,6 +310,9 @@ body.tint-tiles .leaflet-tile-pane{filter:var(--tile-filter)}
 .leg-v em{font-style:normal;display:block;font-size:10.5px;color:var(--muted-foreground)}
 .tag{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;padding:2px 6px;border:1px solid var(--border);color:var(--muted-foreground)}
 .tag.done{border-color:transparent;background:var(--grct-green-deep);color:#fff}
+.tag.home{border-color:transparent;background:var(--muted);color:var(--muted-foreground)}
+.li-gbp{color:var(--grct-green-deep);font-weight:600}
+:root[data-theme="dark"] .li-gbp{color:#5fd398}
 .tag.now{border-color:var(--grct-orange);color:var(--grct-orange-deep)}
 :root[data-theme="dark"] .tag.now{color:var(--grct-orange)}
 
@@ -316,8 +361,8 @@ footer.site{border-top:1px solid var(--border);background:var(--card);padding:26
 @media (max-width:1000px){
   .grid2,.grid3{grid-template-columns:1fr}
   .stats{grid-template-columns:repeat(2,1fr)}
-  .stats>div:nth-child(2){border-right:0}
-  .stats>div:nth-child(-n+2){border-bottom:1px solid var(--border)}
+  .stats>div:nth-child(even){border-right:0}
+  .stats>div:not(:nth-last-child(-n+1)){border-bottom:1px solid var(--border)}
   .hero-grid{grid-template-columns:1fr}
   .hdr nav{display:none}
 }
@@ -331,10 +376,20 @@ footer.site{border-top:1px solid var(--border);background:var(--card);padding:26
   .stats>div{border-right:0;border-bottom:1px solid var(--border)}
   .stats>div:last-child{border-bottom:0}
   #map{height:clamp(360px,62vh,520px)}
+  .mapstage{flex-direction:column}
+  .timeline{width:auto;flex-direction:row;align-items:center;gap:12px;
+    border-left:0;border-top:1px solid var(--border);padding:11px 14px}
+  .tl-top{flex-direction:row;gap:8px}
+  .tl-track{flex:1;width:auto;height:8px;min-height:0}
+  .tl-fill{top:0;bottom:0;height:auto !important;width:0}
+  .tl-handle{top:50%;bottom:auto !important;transform:translate(-50%,-50%)}
+  .tl-read{flex-direction:row;align-items:baseline;gap:7px;width:auto;flex:none}
+  .tl-read b{font-size:10.5px}
   .maphud .hudchip:not(#map-hint){display:none}
   .maphud{gap:0}
 }
 @media (prefers-reduced-motion:reduce){
+  .tl-fill,.tl-handle{transition:none}
   *{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
 }
 </style>
@@ -378,11 +433,17 @@ footer.site{border-top:1px solid var(--border);background:var(--card);padding:26
         <div class="badge20"><b>20</b><span>Years nourishing hope &middot; 2006&ndash;2026</span></div>
         <h1 class="title">The Great Garden&nbsp;Route <em>Trek</em></h1>
         <p class="lede">Every kilometre walked, run, cycled or swum by our supporters lights up the road from
-          Wellington to Port Elizabeth. Zoom in anywhere to see exactly who covered which stretch.</p>
+          Wellington to Port Elizabeth, and every pound raised goes towards our <b id="lede-goal">&pound;10,000</b> target.
+          Zoom in anywhere to see who covered which stretch, or wind the weeks back to watch the road fill.</p>
+        <p class="lede" style="margin-top:10px">
+          <b style="color:var(--grct-green-deep)">There&rsquo;s no hard stop at the end of September.</b>
+          We&rsquo;re keeping the trek open right through the autumn, so anyone caught out by the start of the
+          school or university year still has time to take part.</p>
       </div>
       <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-start">
         <span class="pill live" id="src-pill"><i></i><span id="src-txt">Loading</span></span>
         <span class="pill" id="upd-pill" hidden>Updated <span id="upd-txt" class="mono"></span></span>
+        <span class="pill autumn"><i></i>Open through the autumn</span>
       </div>
     </div>
 
@@ -393,8 +454,13 @@ footer.site{border-top:1px solid var(--border);background:var(--card);padding:26
         <div class="stat-bar"><i id="s-bar"></i></div>
       </div>
       <div>
+        <div class="stat-v"><span id="s-gbp">&pound;0</span></div>
+        <div class="stat-k">Raised towards <span id="s-gbp-goal">&pound;10,000</span></div>
+        <div class="stat-bar"><i id="s-gbp-bar" class="green"></i></div>
+      </div>
+      <div>
         <div class="stat-v"><span id="s-pct">0</span><small>%</small></div>
-        <div class="stat-k">Of the 1,000&nbsp;km route complete</div>
+        <div class="stat-k" id="s-pct-k">Of the route complete</div>
       </div>
       <div>
         <div class="stat-v"><span id="s-people">0</span></div>
@@ -413,14 +479,15 @@ footer.site{border-top:1px solid var(--border);background:var(--card);padding:26
     <div class="card" id="mapcard">
       <div class="card-hd">
         <div>
-          <h3>Wellington &rarr; Port Elizabeth</h3>
-          <p id="map-sub">1,000&nbsp;km along South Africa&rsquo;s southern coast</p>
+          <h3 id="map-title">Wellington &rarr; Port Elizabeth</h3>
+          <p id="map-sub">Along South Africa&rsquo;s southern coast</p>
         </div>
         <div class="spacer"></div>
         <span class="tag" id="map-tag">&mdash;</span>
       </div>
 
-      <div style="position:relative">
+      <div class="mapstage">
+      <div class="mapcol">
         <div id="map"></div>
 
         <div class="maphud">
@@ -445,6 +512,31 @@ footer.site{border-top:1px solid var(--border);background:var(--card);padding:26
         <div class="tt" id="tt" aria-hidden="true"></div>
       </div>
 
+      <div class="timeline" id="timeline" hidden>
+        <div class="tl-top">
+          <span class="tl-cap">Week</span>
+          <button class="tl-play" id="tl-play" title="Play the weeks" aria-label="Play the weeks">
+            <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path id="tl-play-i" d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg>
+          </button>
+        </div>
+
+        <div class="tl-track" id="tl-track" role="slider" tabindex="0"
+             aria-label="Show the trek as it stood at the end of a chosen week"
+             aria-orientation="vertical" aria-valuemin="0" aria-valuemax="0" aria-valuenow="0">
+          <div class="tl-fill" id="tl-fill"></div>
+          <div class="tl-ticks" id="tl-ticks" aria-hidden="true"></div>
+          <div class="tl-handle" id="tl-handle" aria-hidden="true"><i></i></div>
+        </div>
+
+        <div class="tl-read">
+          <b id="tl-date">&mdash;</b>
+          <span id="tl-km" class="mono">0 km</span>
+          <span id="tl-gbp" class="mono">&pound;0</span>
+          <button class="tl-now" id="tl-now" hidden>Back to now</button>
+        </div>
+      </div>
+      </div>
+
       <div class="map-foot">
         <span class="swatches"><i style="background:var(--dot-dim)"></i> Not yet covered</span>
         <span class="swatches" id="sw-live"></span>
@@ -457,7 +549,7 @@ footer.site{border-top:1px solid var(--border);background:var(--card);padding:26
   <div class="grid2">
     <div class="card">
       <div class="card-hd">
-        <div><h3>The six legs</h3><p>Click a leg to zoom the map to it</p></div>
+        <div><h3 id="legs-h">The six legs</h3><p>Click a leg to zoom the map to it</p></div>
       </div>
       <div class="card-bd"><div id="legs"></div></div>
     </div>
@@ -480,13 +572,25 @@ footer.site{border-top:1px solid var(--border);background:var(--card);padding:26
       <div class="card-bd scroll" style="max-height:330px"><div class="feed" id="feed"></div></div>
     </div>
     <div class="card">
-      <div class="card-hd"><div><h3>Join the trek</h3><p>Every kilometre feeds a child</p></div></div>
+      <div class="card-hd"><div><h3>Join the trek</h3><p>Still open &mdash; all through the autumn</p></div></div>
       <div class="card-bd">
         <p style="margin:0 0 12px;font-size:12.5px;color:var(--muted-foreground)">
           Choose your distance and how you&rsquo;ll cover it &mdash; walk, run, cycle, swim or scoot. Send your total to
           <a class="mono" style="color:var(--grct-green-deep)" href="mailto:trek@grct.org.uk">trek@grct.org.uk</a>
           and we&rsquo;ll add you to the map.
         </p>
+        <p style="margin:0 0 12px;font-size:12.5px;color:var(--muted-foreground)">
+          We had planned to finish at the end of September, but so many people were busy with the new school
+          and university year that we&rsquo;ve kept it going. Start whenever you&rsquo;re ready.
+        </p>
+        <div style="border:1px solid var(--border);padding:11px;margin-bottom:12px;
+                    background:color-mix(in oklab,var(--grct-green) 7%,transparent)">
+          <div class="eyebrow" style="margin-bottom:5px">Our target</div>
+          <div style="display:flex;align-items:baseline;gap:7px">
+            <b class="mono" style="font-size:21px;font-weight:600;letter-spacing:-.02em">&pound;10,000</b>
+            <span style="font-size:11.5px;color:var(--muted-foreground)">= a school year of breakfasts for 500 children</span>
+          </div>
+        </div>
         <div style="border:1px solid var(--border);padding:11px;margin-bottom:12px">
           <div class="eyebrow" style="margin-bottom:7px">What your entry funds</div>
           <div style="display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:11.5px">
@@ -526,8 +630,8 @@ footer.site{border-top:1px solid var(--border);background:var(--card);padding:26
     </div>
     <div id="fin-stats">
       <div><b id="fin-n">0</b><span>trekkers</span></div>
-      <div><b id="fin-s">0</b><span>submissions</span></div>
-      <div><b id="fin-d">6</b><span>legs completed</span></div>
+      <div><b id="fin-s">&pound;0</b><span>raised together</span></div>
+      <div><b id="fin-d">6</b><span id="fin-d-k">legs completed</span></div>
     </div>
     <div id="fin-act">
       <button class="btn ghost" id="fin-close">See the map</button>
@@ -560,7 +664,26 @@ footer.site{border-top:1px solid var(--border);background:var(--card);padding:26
 const ROUTE_GEOMETRY = [{"from":"Wellington","to":"Cape Town","km":95,"d":[1901120,-3363900,-39,45,-641,-331,61,-137,-44,-50,-165,-86,-62,-80,-56,-190,-37,-375,-772,288,-348,199,-214,39,-465,-52,-1179,-351,-1168,-217,-265,-87,-2145,-970,-220,-34,-612,16,-372,-99,-199,-121,-334,-294,-739,-350,-258,-159,-530,-520,-117,-169,-66,-182,-69,-689,-78,-355,-586,-1289,-138,-430,-236,-1246,94,-1263,-13,-188,-712,-2923,-120,-1277,-123,-220,-975,-986,-101,-146,-65,-167,-18,-178,91,-375,-408,-34,-561,-117,-13406,-3754,-317,-159,-4333,-2805,-4110,-1763,-480,-168,-400,-88,-399,-52,-2275,-134,-354,73,-752,376,-215,47,-204,8,-3729,-623,-239,-17,-233,23,-234,65,-731,371,-187,70,-296,47,-295,-20,-272,-81,-251,-148,-2551,-2343,-303,-219,-422,-206,-405,-120,-519,-92,-291,-7,-1276,-290,-639,-67,-875,-22,-185,-26,-955,16,-251,40,-261,94,-395,-374,-39,-331,-232,12,-109,-22,-286,249]},{"from":"Cape Town","to":"Kleinmond","km":125,"d":[1842410,-3392490,114,-112,78,78,-8,47,43,60,495,-166,249,-35,51,-53,23,-145,296,-265,233,-97,466,-63,239,-82,403,-279,294,-112,312,-162,66,-78,82,-272,56,-68,99,-28,253,17,183,-25,119,-74,124,-204,21,-379,-294,-545,-34,-262,-61,-175,-246,-138,-115,-316,-55,-78,-1027,-796,-86,-126,2,-105,124,-245,328,-169,105,-94,0,-76,-90,-116,38,-212,-118,-154,-9,-56,402,-712,-49,-110,-456,-390,-43,-75,14,-446,222,-501,121,-408,6,-220,-68,-212,-869,-1621,-57,-266,-3,-603,33,-243,478,-1847,-9,-224,-219,-1016,28,-357,932,-16,-70,-401,18,-74,401,-473,539,-541,204,-275,105,-411,-23,-596,315,31,20,-112,-188,-61,-57,-47,-23,-65,32,119,48,-7,175,59,-13,114,367,119,18,91,469,185,68,55,93,-7,745,281,51,-36,277,-6,1149,324,730,131,331,25,3355,682,233,89,216,127,511,430,176,102,185,57,465,75,1104,324,1305,69,1035,232,1512,227,263,-2,795,-75,572,2,383,-70,547,51,549,-49,785,-13,656,52,561,-26,406,99,228,20,878,-138,249,42,630,248,176,21,334,-9,194,34,134,49,186,117,1199,966,157,152,148,204,875,1554,173,-149,609,-234,309,-56,1199,-128,419,-108,349,-167,1639,-993,410,-175,301,-59,306,-11,957,107,238,-32,190,-64,1761,-1041,1513,-1340,338,-152,298,-30,102,-42,985,-929,-398,-279,86,-155,193,-181,143,-88,-589,-531,-76,-76,0,-32,357,-351,84,-272,1298,-1585,30,-69,-3,-138,38,-77,1433,-1756,279,-244,-323,-190,-87,-90,-84,58,162,-338,-13,-118,-115,-157,-47,23,-75,-97,-424,-208,-47,53,-220,-65,-93,-90,-16,11,63,51,8,42,-65,55,50,-22,13,-51,-69,-75,-26,-81,-242,-141,-622,-152,-827,-316,-568,-131,-340,-231,-171,-48,-155,-87,-227,-240,-125,-59,-55,-62,-181,-81,-404,-450,-52,-144,-16,-137,62,-394,255,-490,127,-162,460,-407,58,-98,152,-70,114,-214,128,-41,-20,-159,289,-337,-174,-332,-89,-243,22,-76,110,-47,8,-150,81,-98,80,-36,143,-128,159,-73,62,-71,263,-186,1090,-1098,7,-235,76,-152,-114,-296,188,-167,15,-94,-51,-177,117,-141,39,-98,-7,-101,-94,-273,-75,-132,-11,-119,-193,-392,23,-207,-111,-132,-61,-168,-818,-578,-283,-95,-178,-25,-88,-70,-190,-83,-371,-116,-105,-66,-94,-117,-136,-273,-22,-130,-248,-265,-48,-147,3,-124,-138,-143,-116,-230,-34,-185,-10,-395,75,-182,-5,-95,-71,-75,-199,-53,-61,-72,12,-70,48,-45,390,-100,191,-148,84,-106,53,-123,60,-319,262,-505,85,-411,81,-127,301,-300,105,-142,342,-702,147,-413,141,-218,1373,-1248,786,-835,246,-142,317,-58,183,13,2174,398,1272,367,408,46,570,206,290,52,248,-21,744,-212,462,-49,347,-135,753,-207,416,19,903,-70,1296,16,170,86,86,115,224,745,63,121,162,154,327,159,148,124,520,729,45,133,4,272,42,57,102,38,156,-15,81,-46,145,-348,120,-127,137,-83,218,-62,441,-6,191,-26,971,-348,140,-18,1550,99,-1,106]},{"from":"Kleinmond","to":"Swellendam","km":160,"d":[1903110,-3433900,1,-106,429,36,816,312,1312,435,308,78,2611,198,3173,1068,446,233,915,739,99,117,141,257,587,513,203,106,221,37,-15,-206,42,-228,459,-1059,34,-216,-48,-173,-84,-123,-725,-720,-89,-121,-67,-205,-205,-999,0,-235,45,-198,557,-1424,42,-190,6,-273,-21,-185,-414,-1778,-352,-993,-22,-167,31,-217,136,-243,408,-427,267,-166,882,-282,235,-43,920,31,641,-6,940,-80,570,-75,405,-77,1635,-398,1299,-455,1889,-129,112,87,-11,53,65,-17,25,27,34,-10,-34,10,-25,-27,-65,17,11,-53,152,41,265,246,85,-90,119,-34,121,175,627,368,439,7,563,166,138,61,134,136,344,143,153,128,168,70,207,-47,2689,-883,105,-13,156,26,119,58,183,271,142,115,444,112,424,252,280,85,906,-2,856,-138,1366,-51,322,20,1767,221,392,-9,615,-126,5781,-1712,397,-71,1346,-104,247,-75,184,-116,159,-183,78,-211,-11,-216,-131,-302,-49,-230,-160,-223,-66,-171,-70,42,-215,-248,-239,81,-446,250,420,-240,253,-91,227,248,182,-62,1746,-63,234,26,4440,2134,408,175,300,25,395,-119,107,5,489,282,852,396,152,26,307,-31,313,61,907,331,685,172,201,-4,376,-106,282,40,138,-13,139,-98,74,-182,68,-78,96,-46,139,-2,2595,892,180,101,243,199,302,124,108,76,184,440,299,196,203,217,82,163,80,305,144,230,157,140,1154,842,241,209,347,416,872,1292,457,397,230,96,383,74,655,261,298,211,146,71,421,48,1190,312,1693,531,530,270,228,85,237,56,1644,211,136,42,127,79,1513,2116,151,311,638,1743,544,998,46,243,-131,1804,46,183,152,162,1090,640,127,123,65,118,32,148,-31,2130,29,316,1184,4021,62,149,249,302,33,125,-23,149,10076,1680,155,50,254,154,118,28,1169,-152,117,-51,215,-150,168,-55,3369,-456,210,-7,244,40,199,72,161,95,1391,1084,324,162,249,52,3228,278,216,45,199,82,258,198,1359,1588,214,208,234,125,1933,623,342,157,244,178,182,193,923,1360,177,183,144,91,197,79,1275,305,399,8,286,-64,1406,-566,239,-62,2117,-149,1405,-291,1578,-95,1921,-363,234,4,1605,230,209,10,192,-24,2261,-534,282,-44,9951,-24,1168,-162,276,17,2785,1167,246,157,859,679,716,389,283,226,839,1073,799,783,786,921,204,334,310,852,129,253,492,649,415,268,14,68,168,187,-419,401,298,207,-84,68,-56,-34]},{"from":"Swellendam","to":"Knysna","km":280,"d":[2044100,-3402100,56,34,84,-68,538,426,167,35,560,-320,236,-213,123,-71,174,-23,416,39,91,-84,401,-45,3315,-933,1452,-463,269,-15,1306,168,260,12,3261,-644,311,-165,715,-722,292,-182,658,-243,717,-158,235,-4,291,69,166,10,173,-24,202,-90,1380,-1164,293,-302,1823,-1502,203,-131,213,-77,386,-27,3430,288,563,-20,4028,-713,227,-120,933,-738,221,-98,202,-46,314,3,1079,138,250,-48,458,-236,161,-45,1547,-3,233,49,904,401,313,26,189,-43,144,-71,817,-652,673,-359,241,-80,261,-43,5223,-449,344,24,1445,356,1794,-16,2913,305,1949,727,202,162,387,495,120,111,1127,458,531,453,166,95,204,54,1095,113,796,150,211,-31,175,-72,410,-392,190,-112,174,-60,1206,-237,1867,-6,279,-37,243,-76,989,-412,590,-102,738,-307,303,-87,147,-81,2269,-1937,201,-115,236,-87,291,-53,252,-2,409,83,3859,1483,4327,674,351,138,1081,729,352,157,2265,476,296,17,181,-23,194,-56,241,-123,599,-514,23,-129,-107,-311,-6,-132,236,-592,-29,-706,37,-187,66,-141,733,-937,160,-155,254,-110,586,-91,179,-108,262,-362,226,-590,34,-408,65,-125,113,-70,109,-20,334,94,203,-16,1389,-660,78,-87,24,-101,-90,-314,52,-135,73,-90,300,-201,411,-119,125,-63,627,-536,131,-80,160,-43,159,-4,2072,75,3214,-414,3495,-710,868,-259,895,-101,1955,-395,898,-280,959,-95,7192,-1450,1652,-537,453,-88,548,-35,6032,233,2918,686,5228,937,3832,855,247,31,1254,-44,233,-81,291,-231,150,-67,1106,-130,553,-212,2951,-366,497,0,378,70,5716,1642,593,103,1435,175,22631,-624,2,59,-85,9,5,100,48,28,235,-5,-14,61,46,9,28,78,68,38,112,8,6,-31,109,-2,-109,2,-6,31,-37,-1,70,77,284,-155,47,-71,3,-78,111,-10,-20,174,-132,316,-96,114,-542,294,-460,351,-213,211,-238,73,-453,85,-197,95,-350,361,-232,189,-198,357,-119,385,-1,92,91,316,-26,142,-435,52,31,91,126,73,45,67,307,1320,309,784,93,755,125,270,1341,1645,843,495,1903,1451,2013,908,1673,558,2305,367,727,54,165,35,1039,562,813,289,282,230,122,55,137,17,123,-18,819,-375,302,-38,540,53,250,65,212,107,426,312,154,57,470,-13,308,133,168,30,169,-25,275,-111,240,3,146,58,121,104,60,112,45,261,77,173,145,168,206,133,3614,1054,192,30,543,1,888,57,492,146,730,117,427,-38,205,19,182,63,1422,740,787,233,502,101,238,17,774,-97,490,-17,502,47,746,144,397,139,1086,596,389,122,2077,347,1451,-16,1514,99,292,99,1252,637,235,173,147,45,157,-9,128,-53,916,-775,160,-82,170,-38,239,14,566,172,534,306,246,244,138,64,109,16,151,-58,274,-296,51,-25,82,26,54,130,100,115,88,26,88,-26,49,-95,-76,-194,34,-200,50,-95,123,-102,253,-105,352,-194,87,25,185,207,116,40,940,63,393,-89,574,29,-52,-67,-20,30,68,27,-410,-10,324,21,1062,-26,218,-35,432,-185,133,-3,441,62,330,-7,3480,-470,1257,145,806,-20,166,42,496,217,252,34,164,-34,653,-267,224,-50,2360,-249,537,-9,467,-74,509,-14,390,100,141,0,529,-156,614,-70,963,-301,289,-65,3383,-14,883,-145,1431,-578,1840,-501,335,-37,1922,-102,890,-106,825,-64,1615,-231,2294,-940,818,-203,489,-93,408,-20,163,34,384,251,297,76,261,128,257,66,384,255,542,237,158,33,394,-36,470,41,439,-151,595,-140,273,-33,134,-93,371,-471,159,-75,113,-3,682,179,583,91,86,85,57,218,356,488,109,81,120,25,268,-61,245,-151,233,12,111,-35,192,-261,283,-178,146,-269,115,-138,115,-91,126,-43,140,4,759,159,577,14,247,59,523,-49,376,68,299,154,375,-57,44,23,15,-28,-26,-1,-8,-62]},{"from":"Knysna","to":"St Francis Bay","km":200,"d":[2304800,-3403600,-26,-142,125,-16,30,198,287,-32,502,-146,184,-6,321,-70,239,30,385,-220,851,-134,909,-250,302,-26,222,-79,141,-8,166,47,381,198,200,59,416,29,309,-116,156,-16,424,140,432,22,168,84,461,477,207,90,150,-3,803,-260,233,-44,1804,190,128,55,116,129,156,807,129,105,207,36,729,-258,187,-12,338,44,182,-26,359,-173,454,-91,389,-215,383,-79,1144,-401,880,-76,1336,40,777,-48,628,-104,1862,-457,584,-89,4538,-6,512,-22,1224,-240,1165,-678,184,-70,189,-21,194,27,1129,437,101,-78,350,-63,711,-428,188,-68,38,409,-54,-5,150,40,61,129,-14,50,-281,233,-33,54,-10,150,178,195,-27,317,-53,48,1580,2383,226,284,571,612,302,391,173,82,390,19,161,-69,201,-193,143,-85,512,-151,166,-8,232,105,405,325,1120,294,144,75,100,94,77,183,-20,209,24,103,72,103,164,131,66,116,67,532,-70,191,-656,836,-33,117,15,96,127,159,158,59,359,34,293,107,381,-59,154,19,160,89,181,208,181,72,406,-36,325,61,251,-56,153,6,678,320,139,121,634,919,162,133,557,362,223,202,153,232,254,571,120,127,207,105,188,31,836,-35,839,11,2453,179,182,-6,215,-56,729,-421,169,-71,341,-59,5382,142,242,-15,170,-43,241,-109,220,-176,1816,-2298,259,-175,187,-68,187,-31,1185,-29,6978,-638,3817,-122,542,-66,774,-160,418,-37,412,21,3009,300,4552,487,234,61,675,326,298,42,953,-95,787,-39,5,-100,121,-259,-210,-349,753,-323,770,-173,-770,173,-401,169,107,292,-18,181,48,199,120,129,-111,19,-7,22,3811,-169,1655,-171,434,-105,939,-345,1227,-380,319,-78,530,-63,3683,-286,1818,3,336,52,571,142,326,21,220,-17,390,-80,2946,-805,633,-133,6497,-110,5624,-384,6637,-890,750,-288,774,-140,380,-95,11796,-3696,9298,-841,404,16,355,84,3083,1221,172,96,153,130,468,621,125,79,202,65,170,10,201,-35,1002,-350,1025,-540,272,-48,300,38,204,87,134,99,516,650,198,175,2820,1414,788,225,907,131,991,314,796,45,249,38,1246,386,366,162,1324,848,319,123,304,48,248,-6,748,-166,331,-21,2289,171,261,-47,3758,-1072,293,-68,283,-19,85,-566,-222,-1189,-57,-84,-113,-62,-169,-39,-224,14,-65,-26,-43,-49,-242,-725,1108,-208,324,-142,227,-180,157,-195,497,-825,245,-1175,152,-128,405,-128,110,-131,19,-190,-33,-174,-327,-544,-57,-233,1,-134,643,-4679,884,-2097,144,-187,423,-323,95,-121,22,-105,-52,-817,9,-64,68,-3,13,-128,120,-97,53,-12,358,59,256,7,24,-588,152,-199,104,-257,85,23,56,-71,183,56,40,41,278,-186,53,52,237,409]},{"from":"St Francis Bay","to":"Port Elizabeth","km":140,"d":[2484000,-3417000,-237,-409,-53,-52,-311,210,-100,33,-161,-8,15,-75,-85,-23,-104,257,-152,199,-24,588,-256,-7,-378,-58,-138,87,-28,141,-93,-2,68,894,-22,105,-95,121,-423,323,-144,187,-884,2097,-643,4679,-1,134,57,233,327,544,33,174,-19,190,-110,131,-405,128,-152,128,-245,1175,-497,825,-157,195,-227,180,-324,142,-1108,208,242,725,43,49,65,26,224,-14,169,39,113,62,57,84,222,1189,-85,566,443,-204,6874,-1957,380,-48,457,80,264,131,2861,1746,1054,454,2916,2058,334,291,1465,1724,206,189,266,178,4897,2461,357,67,1319,-24,248,36,1913,461,1308,587,637,172,183,125,327,295,76,167,33,335,51,120,96,117,1046,613,465,205,359,75,357,21,542,-33,368,-139,170,-32,681,19,157,49,1302,663,1047,356,214,42,299,7,607,-131,3523,-947,1990,-774,216,-9,4206,191,546,-44,11155,-2573,5544,-1579,513,-27,6621,605,450,-25,1470,-296,346,-32,294,13,1229,153,654,99,343,80,1323,-156,712,-147,501,-25,755,-117,573,-221,1774,-588,149,44,80,85,209,-118,131,120,37,1,103,-189]}];
 
 const CONFIG = {
-  goalKm: 1000,
+  /* --- how far, and how much ------------------------------------------- */
+  goalKm: 1000,             // Wellington → Port Elizabeth, as published
+
+  /* THE ONE SWITCH.  false = one way (1,000 km).  true = out and back again
+     (2,000 km), turning at Port Elizabeth and retracing the road home.
+     Everything follows from this: the goal, every percentage, the leg table,
+     the town labels, the finish line, and the map, which splits into two
+     lanes so the way out and the way home never sit on top of each other. */
+  returnLeg: false,
+
+  goalGbp: 10000,           // the fundraising target, in pounds
+  /* Should doubling the distance double the money target too?  Left off, so
+     £10,000 stands whichever route you run. */
+  returnDoublesTarget: false,
+
+  /* --- the week-by-week timeline ---------------------------------------- */
+  timeline: {
+    enabled: true,
+    playMs: 1100            // dwell per week when the play button is running
+  },
 
   /* --- where the numbers come from ------------------------------------- */
   data: {
@@ -574,7 +697,9 @@ const CONFIG = {
     pollMs: 60000,          // 'fetch' mode; 0 = fetch once only
 
     /* Map whatever your source returns onto the shape this page needs:
-     *   { id, name, km, activity, date, note }
+     *   { id, name, km, gbp, activity, date, note }
+     * `gbp` is money raised — sign-up plus any sponsorship. A pure donation
+     * with no distance is fine: give it km:0 and it still counts to the total.
      * activity ∈ walk | run | cycle | swim | hike | scoot | other
      * Order matters — contributions are laid along the road in this order.  */
     normalise(rows){
@@ -582,10 +707,11 @@ const CONFIG = {
         id:       r.id ?? ('r' + i),
         name:     String(r.name ?? r.Name ?? 'Anonymous').trim(),
         km:       Number(r.km ?? r.Km ?? r.kilometres ?? r.distance ?? 0),
+        gbp:      Number(r.gbp ?? r.GBP ?? r.raised ?? r.Raised ?? r.amount ?? r.Amount ?? 0) || 0,
         activity: String(r.activity ?? r.Activity ?? 'walk').toLowerCase().trim(),
         date:     r.date ?? r.Date ?? null,
         note:     r.note ?? r.Note ?? null
-      })).filter(r => r.name && r.km > 0);
+      })).filter(r => r.name && (r.km > 0 || r.gbp > 0));
     },
 
     connect(push){
@@ -598,22 +724,27 @@ const CONFIG = {
     /* SAMPLE DATA — replace with the real submissions and set sample:false. */
     sample: true,
     inline: [
-      { id:'s01', name:'Penny Fleming',       km: 42, activity:'walk',  date:'2026-09-01', note:'Opened the trek on the Downs' },
-      { id:'s02', name:'Oxshott Primary',     km: 68, activity:'walk',  date:'2026-09-02', note:'Whole of Year 4, one lunchtime' },
-      { id:'s03', name:'Mark Chapman',        km: 31, activity:'run',   date:'2026-09-03' },
-      { id:'s04', name:'The Hurrell family',  km: 24, activity:'walk',  date:'2026-09-04', note:'Four of us plus the dog' },
-      { id:'s05', name:'Cathy Williamson',    km: 55, activity:'cycle', date:'2026-09-05' },
-      { id:'s06', name:'Ruth Burns',          km: 18, activity:'walk',  date:'2026-09-06' },
-      { id:'s07', name:'Knysna e’Pap crew',   km: 46, activity:'walk',  date:'2026-09-07', note:'Cheer relay along the lagoon' },
-      { id:'s08', name:'Nicki Galazka',       km: 27, activity:'swim',  date:'2026-09-08', note:'Lido, 30 lengths a day' },
-      { id:'s09', name:'Cath Mitchell',       km: 39, activity:'hike',  date:'2026-09-09' },
-      { id:'s10', name:'St Andrew’s Oxshott', km: 84, activity:'walk',  date:'2026-09-11', note:'Sunday congregation walk' },
-      { id:'s11', name:'Patrick Fleming',     km: 63, activity:'cycle', date:'2026-09-12' },
-      { id:'s12', name:'Shelley Godsell',     km: 22, activity:'walk',  date:'2026-09-13' },
-      { id:'s13', name:'Hout Bay volunteers', km: 37, activity:'run',   date:'2026-09-15' },
-      { id:'s14', name:'The Bell family',     km: 29, activity:'scoot', date:'2026-09-16', note:'Two scooters, one balance bike' },
-      { id:'s15', name:'Vryburg supporters',  km: 41, activity:'walk',  date:'2026-09-17' },
-      { id:'s16', name:'Anna Whitfield',      km: 16, activity:'run',   date:'2026-09-18' }
+      { id:'s01', name:'Penny Fleming',       km: 42, gbp: 320, activity:'walk',  date:'2026-09-01', note:'Opened the trek on the Downs' },
+      { id:'s02', name:'Oxshott Primary',     km: 68, gbp: 840, activity:'walk',  date:'2026-09-02', note:'Whole of Year 4, one lunchtime' },
+      { id:'s03', name:'Mark Chapman',        km: 31, gbp: 150, activity:'run',   date:'2026-09-03' },
+      { id:'s04', name:'The Hurrell family',  km: 24, gbp: 120, activity:'walk',  date:'2026-09-04', note:'Four of us plus the dog' },
+      { id:'s05', name:'Cathy Williamson',    km: 55, gbp: 245, activity:'cycle', date:'2026-09-05' },
+      { id:'s06', name:'Ruth Burns',          km: 18, gbp:  60, activity:'walk',  date:'2026-09-06' },
+      { id:'s07', name:'Knysna e\u2019Pap crew',   km: 46, gbp: 310, activity:'walk',  date:'2026-09-07', note:'Cheer relay along the lagoon' },
+      { id:'s08', name:'Nicki Galazka',       km: 27, gbp: 185, activity:'swim',  date:'2026-09-08', note:'Lido, 30 lengths a day' },
+      { id:'s09', name:'Cath Mitchell',       km: 39, gbp: 140, activity:'hike',  date:'2026-09-09' },
+      { id:'s10', name:'St Andrew\u2019s Oxshott', km: 84, gbp:1150, activity:'walk',  date:'2026-09-11', note:'Sunday congregation walk' },
+      { id:'s11', name:'Patrick Fleming',     km: 63, gbp: 275, activity:'cycle', date:'2026-09-12' },
+      { id:'s12', name:'Shelley Godsell',     km: 22, gbp:  95, activity:'walk',  date:'2026-09-13' },
+      { id:'s13', name:'Hout Bay volunteers', km: 37, gbp: 230, activity:'run',   date:'2026-09-15' },
+      { id:'s14', name:'The Bell family',     km: 29, gbp: 145, activity:'scoot', date:'2026-09-16', note:'Two scooters, one balance bike' },
+      { id:'s15', name:'Vryburg supporters',  km: 41, gbp: 180, activity:'walk',  date:'2026-09-17' },
+      { id:'s16', name:'Anna Whitfield',      km: 16, gbp:  75, activity:'run',   date:'2026-09-18' },
+      { id:'s17', name:'Guildford ramblers',  km: 52, gbp: 260, activity:'hike',  date:'2026-09-24', note:'Autumn leg — three Sundays' },
+      { id:'s18', name:'Anna Whitfield',      km: 22, gbp:  80, activity:'run',   date:'2026-10-02', note:'Back for a second helping' },
+      { id:'s19', name:'The Fleming grandchildren', km: 18, gbp: 110, activity:'scoot', date:'2026-10-08' },
+      { id:'s20', name:'Cobham Free School',  km: 74, gbp: 520, activity:'walk',  date:'2026-10-15', note:'Half-term sponsored walk' },
+      { id:'s21', name:'Gift Aid top-up',     km:  0, gbp: 435, activity:'other', date:'2026-10-17', note:'Claimed on autumn donations' }
     ]
   },
 
@@ -767,19 +898,34 @@ function metres(a, b){                                   // haversine, [lat,lng]
 }
 
 const ROUTE = (() => {
-  const legs = ROUTE_GEOMETRY.map((L, i) => {
+  const measure = pts => {
+    const cum = [0];
+    for (let k = 1; k < pts.length; k++) cum.push(cum[k-1] + metres(pts[k-1], pts[k]));
+    return { cum, len: cum[cum.length-1] };
+  };
+
+  const out = ROUTE_GEOMETRY.map(L => {
     const pts = [];
     let x = 0, y = 0;
     for (let k = 0; k < L.d.length; k += 2){
       x += L.d[k]; y += L.d[k+1];
       pts.push([y/1e5, x/1e5]);                          // Leaflet order: lat, lng
     }
-    const cum = [0];
-    for (let k = 1; k < pts.length; k++) cum.push(cum[k-1] + metres(pts[k-1], pts[k]));
-    return { from:L.from, to:L.to, km:L.km, index:i, pts, cum, len:cum[cum.length-1] };
+    return { from:L.from, to:L.to, km:L.km, pts, back:false, ...measure(pts) };
   });
+
+  /* Out and back: retrace the same road in reverse. The dots for the two
+     directions are pushed to opposite sides of the road at draw time, so the
+     way home reads as its own lane rather than covering the way out. */
+  const legs = CONFIG.returnLeg
+    ? out.concat(out.slice().reverse().map(l => {
+        const pts = l.pts.slice().reverse();
+        return { from:l.to, to:l.from, km:l.km, pts, back:true, ...measure(pts) };
+      }))
+    : out;
+
   let acc = 0;
-  for (const l of legs){ l.startKm = acc; acc += l.km; l.endKm = acc; }
+  legs.forEach((l, i) => { l.index = i; l.startKm = acc; acc += l.km; l.endKm = acc; });
 
   /* Published leg distances drive the kilometre scale; the road drives the
      shape. Each leg maps its own km span onto its own drawn length. */
@@ -794,14 +940,20 @@ const ROUTE = (() => {
     const span = leg.cum[hi] - leg.cum[lo];
     const f = span > 0 ? (target - leg.cum[lo]) / span : 0;
     const a = leg.pts[lo], b = leg.pts[hi];
-    return { lat: a[0] + (b[0]-a[0])*f, lng: a[1] + (b[1]-a[1])*f, leg };
+    return { lat: a[0] + (b[0]-a[0])*f, lng: a[1] + (b[1]-a[1])*f, leg, a, b };
   };
-  const all = legs.flatMap(l => l.pts);
-  return { legs, totalKm: acc, at, all,
+  const all = out.flatMap(l => l.pts);
+  return { legs, out, totalKm: acc, at, all, doubled: CONFIG.returnLeg,
            bounds: L.latLngBounds(all.map(p => L.latLng(p[0], p[1]))) };
 })();
 
-const GOAL = CONFIG.goalKm;
+const GOAL   = CONFIG.goalKm * (CONFIG.returnLeg ? 2 : 1);
+const GOALGBP = CONFIG.goalGbp * (CONFIG.returnLeg && CONFIG.returnDoublesTarget ? 2 : 1);
+const NLEGS  = ROUTE.legs.length;
+const gbpFmt = n => '\u00a3' + Math.round(n).toLocaleString('en-GB');
+/* "the six legs" / "the twelve legs" */
+const WORDS  = { 6:'six', 12:'twelve' };
+const legWord = WORDS[NLEGS] || String(NLEGS);
 
 const ACTIVITY = {
   walk:  { label:'Walking',    icon:'M13 4.2a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3M9 21l2-5-2.2-2 .7-4L7 11.5 5.5 15M14 21l-1.5-5-1.7-2.6.9-4.2 2.3 2.3 3 .9' },
@@ -817,7 +969,40 @@ const actOf = a => ACTIVITY[a] ? a : 'other';
 /* ============================================================================
  *  DERIVED STATE
  * ========================================================================= */
-const state = { people: [], spans: [], total: 0, complete: false, byActivity: [] };
+const state = { people: [], spans: [], total: 0, gbp: 0, complete: false, byActivity: [],
+                weeks: [], weekIdx: 0, live: true, rows: [] };
+
+/* ---------------------------------------------------------- the timeline ---
+   Weeks run Monday to Monday, from the first submission to whichever is later
+   of the last submission and today — so the track grows on its own as the
+   challenge runs into the autumn. */
+function mondayOf(d){
+  const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  x.setDate(x.getDate() - ((x.getDay() + 6) % 7));
+  return x;
+}
+function buildWeeks(){
+  const ts = store.rows.map(r => r.date ? Date.parse(r.date) : NaN).filter(t => !isNaN(t));
+  if (!ts.length) return [];
+  const first = mondayOf(new Date(Math.min(...ts)));
+  const last  = Math.max(Math.max(...ts), Date.now());
+  const weeks = [];
+  for (const t = new Date(first); t <= last && weeks.length < 260; t.setDate(t.getDate() + 7)){
+    const start = new Date(t), end = new Date(t);
+    end.setDate(end.getDate() + 7);
+    weeks.push({ start, end, i: weeks.length });
+  }
+  return weeks;
+}
+/** Submissions as they stood at the end of the selected week. */
+function rowsUpTo(){
+  const w = state.weeks[state.weekIdx];
+  if (!w || state.live) return store.rows;
+  return store.rows.filter(r => {
+    const t = r.date ? Date.parse(r.date) : NaN;
+    return isNaN(t) ? true : t < w.end;        // undated entries always count
+  });
+}
 
 function applyRows(rows, opts = {}){
   store.rows = opts.append ? store.rows.concat(rows) : rows;
@@ -827,17 +1012,26 @@ function applyRows(rows, opts = {}){
 }
 
 function recompute(){
+  state.weeks = CONFIG.timeline.enabled ? buildWeeks() : [];
+  const lastWeek = Math.max(0, state.weeks.length - 1);
+  if (state.weekIdx > lastWeek) state.weekIdx = lastWeek;
+  state.live = !state.weeks.length || state.weekIdx >= lastWeek;
+
+  const rows = state.rows = rowsUpTo();
   const byName = new Map();
-  let acc = 0;
-  state.spans = store.rows.map(r => {
+  let acc = 0, money = 0;
+  state.spans = rows.map(r => {
     const from = acc; acc += r.km; const to = acc;
-    if (!byName.has(r.name)) byName.set(r.name, { name:r.name, km:0, rows:[], first:byName.size, from, to });
+    money += r.gbp || 0;
+    if (!byName.has(r.name)) byName.set(r.name, { name:r.name, km:0, gbp:0, rows:[], first:byName.size, from, to });
     const p = byName.get(r.name);
-    p.km += r.km; p.rows.push(r); p.from = Math.min(p.from, from); p.to = Math.max(p.to, to);
+    p.km += r.km; p.gbp += r.gbp || 0; p.rows.push(r);
+    p.from = Math.min(p.from, from); p.to = Math.max(p.to, to);
     return { ...r, from, to, person:p };
   });
 
   state.total = acc;
+  state.gbp = money;
   state.complete = acc >= GOAL;
 
   /* Colour is written onto the person object itself — spans hold references
@@ -847,7 +1041,7 @@ function recompute(){
   state.people = people.slice().sort((a, b) => b.km - a.km);
 
   const acts = new Map();
-  for (const r of store.rows) acts.set(actOf(r.activity), (acts.get(actOf(r.activity)) || 0) + r.km);
+  for (const r of rows) if (r.km > 0) acts.set(actOf(r.activity), (acts.get(actOf(r.activity)) || 0) + r.km);
   state.byActivity = [...acts.entries()]
     .map(([k, km]) => ({ key:k, ...ACTIVITY[k], km })).sort((a, b) => b.km - a.km);
 
@@ -982,34 +1176,46 @@ function bindScrollEtiquette(){
   }
 }
 
-function pinIcon(name, side, flag){
+function pinIcon(name, side, flag, sub){
   const cup = `<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round">
     <path d="M8 8.5a4 4 0 0 0 8 0z"/><path d="M5.6 10.2q-.9 3.2 1.9 4.2"/><path d="M18.4 10.2q.9 3.2-1.9 4.2"/></svg>`;
   const flagHtml = flag
     ? `<span class="flag">${['#1f8454','#fbb040','#1f8454','#fbb040','#1f8454','#fbb040']
         .map(c => `<i style="background:${c}"></i>`).join('')}</span>` : '';
-  const cum = name === ROUTE.legs[0].from ? 0 : (ROUTE.legs.find(l => l.to === name)?.endKm ?? 0);
   return L.divIcon({
     className: '', iconSize: [0, 0],
     html: `<div class="wp" data-side="${side}"${flag ? ` data-flag="${flag}"` : ''}>
              ${flagHtml}<span class="pin">${cup}</span>
-             <span class="lab">${name}<em>${flag === 'start' ? 'Start · ' : flag === 'finish' ? 'Finish · ' : ''}${nf(cum)} km</em></span>
+             <span class="lab">${name}<em>${sub}</em></span>
            </div>`
   });
 }
 
+/** Where a town sits on the route, and what to call it. Going out and back,
+ *  every town in between is passed twice, so it carries both milestones. */
+function wpMeta(name, i, n){
+  const cum = i === 0 ? 0 : (ROUTE.out.find(l => l.to === name)?.endKm ?? 0);
+  if (!ROUTE.doubled) return {
+    flag: i === 0 ? 'start' : i === n - 1 ? 'finish' : null,
+    sub:  (i === 0 ? 'Start \u00b7 ' : i === n - 1 ? 'Finish \u00b7 ' : '') + nf(cum) + ' km'
+  };
+  if (i === 0)     return { flag:'start',  sub:`Start & finish \u00b7 ${nf(GOAL)} km` };
+  if (i === n - 1) return { flag:'finish', sub:`Turnaround \u00b7 ${nf(cum)} km` };
+  return { flag:null, sub:`${nf(cum)} & ${nf(GOAL - cum)} km` };
+}
+
 function drawWaypoints(){
-  const towns = [ROUTE.legs[0].from, ...ROUTE.legs.map(l => l.to)];
+  const towns = [ROUTE.out[0].from, ...ROUTE.out.map(l => l.to)];
   wpMarkers.forEach(m => m.remove()); wpMarkers = [];
   towns.forEach((name, i) => {
-    const p = i === 0 ? ROUTE.at(0) : ROUTE.at(ROUTE.legs[i-1].endKm);
-    const flag = i === 0 ? 'start' : i === towns.length - 1 ? 'finish' : null;
+    const p = i === 0 ? ROUTE.at(0) : ROUTE.at(ROUTE.out[i-1].endKm);
+    const { flag, sub } = wpMeta(name, i, towns.length);
     const m = L.marker([p.lat, p.lng], {
-      icon: pinIcon(name, CONFIG.waypointLabels[name] || 'right', flag),
+      icon: pinIcon(name, CONFIG.waypointLabels[name] || 'right', flag, sub),
       keyboard: false, riseOnHover: true, zIndexOffset: 400
     }).addTo(map);
     m.on('click', () => {
-      const leg = ROUTE.legs.find(l => l.from === name) || ROUTE.legs.at(-1);
+      const leg = ROUTE.out.find(l => l.from === name) || ROUTE.out.at(-1);
       fitKm(leg.startKm, leg.endKm);
     });
     wpMarkers.push(m);
@@ -1030,6 +1236,12 @@ function renderDots(){
   const step = lod.km, n = Math.ceil(GOAL / step);
   const next = [];
 
+  /* Out and back share one road, so nudge each direction to its own side of
+     it. The offset is in screen pixels, so the two lanes stay the same
+     distance apart at every zoom; and because the homeward legs run through
+     their points backwards, the perpendicular flips on its own. */
+  const lane = ROUTE.doubled ? lod.r * 1.25 + 1.4 : 0;
+
   dotLayer.clearLayers();
   dots = [];
 
@@ -1037,6 +1249,17 @@ function renderDots(){
     const kmMid = (i + 0.5) * step;
     const p = ROUTE.at(kmMid);
     if (!b.contains([p.lat, p.lng])) continue;
+
+    let lat = p.lat, lng = p.lng;
+    if (lane){
+      const P = map.latLngToLayerPoint([p.lat, p.lng]);
+      const A = map.latLngToLayerPoint(p.a), B = map.latLngToLayerPoint(p.b);
+      const dx = B.x - A.x, dy = B.y - A.y, m = Math.hypot(dx, dy);
+      if (m > 1e-6){
+        const q = map.layerPointToLatLng([P.x - dy/m*lane, P.y + dx/m*lane]);
+        lat = q.lat; lng = q.lng;
+      }
+    }
 
     const span  = ownerAt(kmMid);
     const swept = sweepKm !== null && kmMid <= sweepKm;
@@ -1046,7 +1269,7 @@ function renderDots(){
 
     const colour = lit ? (owner ? owner.colour : shadeFor(i % 11)) : dimColour;
 
-    const m = L.circleMarker([p.lat, p.lng], {
+    const m = L.circleMarker([lat, lng], {
       renderer: dotRenderer,
       radius: lod.r,
       fillColor: colour,
@@ -1057,7 +1280,8 @@ function renderDots(){
       interactive: true,
       bubblingMouseEvents: false
     });
-    m._d = { i, kmMid, kmFrom:i*step, kmTo:(i+1)*step, step, span, owner, leg:p.leg, lat:p.lat, lng:p.lng };
+    m._d = { i, kmMid, kmFrom:i*step, kmTo:(i+1)*step, step, span, owner, leg:p.leg,
+             back:p.leg.back, lat, lng };
     m.on('mouseover', () => { showTip(m); if (m._d.owner) setHighlight(m._d.owner.name, true); });
     m.on('mouseout',  () => { hideTip(); if (m._d.owner) setHighlight(null, true); });
     next.push(m);
@@ -1147,45 +1371,62 @@ function hideTip(){ $('tt').classList.remove('on'); }
 /* ============================================================================
  *  PANELS
  * ========================================================================= */
-const still = () => reduced() || document.hidden;   // no animation frames available
+let scrubbing = false;
+const still = () => reduced() || document.hidden || scrubbing;
 const paint = fn => document.hidden ? fn() : requestAnimationFrame(fn);
 
 function countUp(node, to, opts = {}){
-  const { dp = 0, dur = 1.1 } = opts;
-  const from = parseFloat((node.textContent || '0').replace(/,/g,'')) || 0;
-  if (still() || from === to){
-    node.textContent = to.toLocaleString('en-GB',{minimumFractionDigits:dp,maximumFractionDigits:dp}); return;
-  }
-  Motion.animate(from, to, { duration:dur, ease:[.16,1,.3,1],
-    onUpdate: v => node.textContent = v.toLocaleString('en-GB',{minimumFractionDigits:dp,maximumFractionDigits:dp}) });
+  const { dp = 0, dur = 1.1, pre = '' } = opts;
+  const fmt = v => pre + v.toLocaleString('en-GB',{minimumFractionDigits:dp,maximumFractionDigits:dp});
+  const from = parseFloat((node.textContent || '0').replace(/[^0-9.-]/g,'')) || 0;
+  if (still() || from === to){ node.textContent = fmt(to); return; }
+  Motion.animate(from, to, { duration:dur, ease:[.16,1,.3,1], onUpdate: v => node.textContent = fmt(v) });
+}
+
+function setBar(el, pct){
+  if (still()) el.style.width = pct + '%';
+  else Motion.animate(el, { width:['0%', pct + '%'] }, { duration:1.2, ease:[.16,1,.3,1] });
 }
 
 function renderStats(){
-  const pct = Math.min(100, state.total / GOAL * 100);
-  countUp($('s-km'), Math.round(state.total));
+  const pct    = Math.min(100, state.total / GOAL * 100);
+  const pctGbp = Math.min(100, state.gbp / GOALGBP * 100);
+
+  countUp($('s-km'),  Math.round(state.total));
+  countUp($('s-gbp'), Math.round(state.gbp), { pre:'\u00a3' });
   countUp($('s-pct'), Math.round(pct * 10) / 10, { dp:1 });
   countUp($('s-people'), state.people.length);
+
   const left = GOAL - state.total;
   countUp($('s-left'), Math.abs(Math.round(left)));
   $('s-left-k').textContent = left >= 0 ? 'Still to go' : 'Kilometres beyond the goal';
-  const bar = $('s-bar');
-  if (still()) bar.style.width = pct + '%';
-  else Motion.animate(bar, { width:['0%', pct + '%'] }, { duration:1.2, ease:[.16,1,.3,1] });
+  $('s-pct-k').textContent = `Of the ${nf(GOAL)}\u00a0km ${ROUTE.doubled ? 'there and back' : 'route'} complete`;
+  $('s-gbp-goal').textContent = gbpFmt(GOALGBP);
+  $('lede-goal').textContent = gbpFmt(GOALGBP);
+
+  setBar($('s-bar'), pct);
+  setBar($('s-gbp-bar'), pctGbp);
 
   const head = ROUTE.at(Math.min(state.total, GOAL));
-  const tag = $('map-tag');
-  if (state.complete){ tag.textContent = 'Route complete'; tag.className = 'tag done'; }
-  else { tag.textContent = 'On leg ' + (head.leg.index + 1) + ' of 6'; tag.className = 'tag now'; }
+  const tag  = $('map-tag');
+  if (state.complete){ tag.textContent = ROUTE.doubled ? 'There and back' : 'Route complete'; tag.className = 'tag done'; }
+  else { tag.textContent = `On leg ${head.leg.index + 1} of ${NLEGS}`; tag.className = 'tag now'; }
 
+  const way = head.leg.back ? ' on the way home' : '';
   $('map-sub').textContent = state.complete
-    ? 'All 1,000 km covered — thank you'
-    : `${nf(Math.round(state.total))} km of 1,000 km · currently between ${head.leg.from} and ${head.leg.to}`;
+    ? `All ${nf(GOAL)} km covered \u2014 thank you`
+    : `${nf(Math.round(state.total))} km of ${nf(GOAL)} km \u00b7 currently between ${head.leg.from} and ${head.leg.to}${way}`;
+
+  $('map-title').textContent = ROUTE.doubled
+    ? 'Wellington \u2192 Port Elizabeth \u2192 Wellington'
+    : 'Wellington \u2192 Port Elizabeth';
 
   $('sw-live').innerHTML = state.people.slice(0, 6).map(p =>
     `<i style="background:${p.colour}"></i>`).join('') + ' <span>A shade for every trekker</span>';
 }
 
 function renderLegs(){
+  $('legs-h').textContent = `The ${legWord} legs`;
   $('legs').innerHTML = ROUTE.legs.map(leg => {
     const pct = Math.round(leg.pct * 100);
     const status = leg.pct >= 1 ? '<span class="tag done">Done</span>'
@@ -1194,7 +1435,8 @@ function renderLegs(){
     return `<div class="leg" data-leg="${leg.index}" title="Zoom to this leg">
       <div class="leg-n">${String(leg.index + 1).padStart(2,'0')}</div>
       <div>
-        <div class="leg-t">${esc(leg.from)} <s>→</s> ${esc(leg.to)} ${status}</div>
+        <div class="leg-t">${esc(leg.from)} <s>→</s> ${esc(leg.to)} ${status}${
+          leg.back ? ' <span class="tag home">Homeward</span>' : ''}</div>
         <div class="leg-tr"><i data-pct="${pct}"></i></div>
       </div>
       <div class="leg-v"><b>${nf(Math.round(leg.done))}</b> / ${nf(leg.km)} km<em>${pct}%</em></div>
@@ -1220,6 +1462,7 @@ function renderPeople(){
       </div>
       <div class="li-tr"><i style="background:${p.colour}" data-w="${p.km / max * 100}"></i></div>
       <div class="li-mt"><span>${share.toFixed(1)}% of total</span><span>·</span>
+        ${p.gbp ? `<span class="li-gbp">${gbpFmt(p.gbp)}</span><span>·</span>` : ''}
         <span>km ${nf(Math.round(p.from))}–${nf(Math.round(p.to))}</span></div>
     </div>`;
   }).join('');
@@ -1255,8 +1498,11 @@ function renderFeed(){
     return `<div class="fi" data-from="${r.from}" data-to="${r.to}" title="Zoom to this stretch">
       <span class="fav" style="background:${r.person.colour}">${esc(init)}</span>
       <div><div class="fi-n">${esc(r.name)}</div>
-        <div class="fi-s">${esc(ACTIVITY[actOf(r.activity)].label)} · km ${nf(Math.round(r.from))}–${nf(Math.round(r.to))}</div></div>
-      <div class="fi-v">+${nf(r.km)}<em>${fmtDate(r.date)}</em></div>
+        <div class="fi-s">${r.km
+          ? esc(ACTIVITY[actOf(r.activity)].label) + ' · km ' + nf(Math.round(r.from)) + '–' + nf(Math.round(r.to))
+          : 'Donation'}</div></div>
+      <div class="fi-v">${r.km ? '+' + nf(r.km) : gbpFmt(r.gbp)}<em>${
+        r.km && r.gbp ? gbpFmt(r.gbp) + ' · ' : ''}${fmtDate(r.date)}</em></div>
     </div>`;
   }).join('');
   document.querySelectorAll('#feed .fi').forEach(f =>
@@ -1274,14 +1520,139 @@ function renderSource(){
     $('upd-pill').hidden = false;
     $('upd-txt').textContent = store.updatedAt.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
   }
-  $('foot-src').textContent = `${store.rows.length} submissions · source: ${store.mode}`;
+  $('foot-src').textContent = `${state.live ? store.rows.length
+    : state.rows.length + ' of ' + store.rows.length} submissions · source: ${store.mode}`;
+}
+
+/* ============================================================================
+ *  THE WEEK-BY-WEEK TIMELINE
+ *  A vertical scrubber: the bottom of the track is the first week of the
+ *  challenge, the top is now. Drag down and the page rewinds — the map
+ *  un-lights, and every number on it follows.
+ * ========================================================================= */
+let playTimer = null;
+
+/* The rail sits beside the map on a wide screen and under it on a narrow one. */
+const tlHorizontal = () => matchMedia('(max-width: 820px)').matches;
+const fmtWeek = w => w.start.toLocaleDateString('en-GB', { day:'numeric', month:'short' });
+const ymd = d => d ? `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}` : null;
+
+function setWeek(idx, opts = {}){
+  const n = state.weeks.length;
+  if (!n) return;
+  const next = Math.max(0, Math.min(n - 1, idx));
+  if (next === state.weekIdx && !opts.force) return;
+  state.weekIdx = next;
+  scrubbing = !!opts.scrubbing;
+  recompute();
+  render();
+  scrubbing = false;
+}
+
+function renderTimeline(){
+  const tl = $('timeline'), n = state.weeks.length;
+  if (!CONFIG.timeline.enabled || n < 2){ tl.hidden = true; return; }
+  tl.hidden = false;
+  tl.toggleAttribute('data-live', state.live);
+
+  const horiz = tlHorizontal();
+  tl.toggleAttribute('data-h', horiz);
+
+  const pct = n > 1 ? state.weekIdx / (n - 1) * 100 : 100;
+  const fill = $('tl-fill'), handle = $('tl-handle');
+  if (horiz){ fill.style.width = pct + '%'; handle.style.left = pct + '%'; }
+  else      { fill.style.height = pct + '%'; handle.style.bottom = pct + '%'; }
+
+  /* thin the ticks out once a long autumn has piled up */
+  const every = n > 26 ? Math.ceil(n / 26) : 1;
+  $('tl-ticks').innerHTML = state.weeks.map((w, i) =>
+    (i % every === 0 || i === n - 1)
+      ? `<i class="${i <= state.weekIdx ? 'on' : ''}" style="${horiz ? 'left' : 'bottom'}:${i/(n-1)*100}%"></i>` : '').join('');
+
+  const w = state.weeks[state.weekIdx];
+  $('tl-date').textContent = state.live ? 'Now' : fmtWeek(w);
+  $('tl-km').textContent   = nf(Math.round(state.total)) + ' km';
+  $('tl-gbp').textContent  = gbpFmt(state.gbp);
+  $('tl-now').hidden = state.live;
+
+  const track = $('tl-track');
+  track.setAttribute('aria-valuemin', 0);
+  track.setAttribute('aria-valuemax', n - 1);
+  track.setAttribute('aria-valuenow', state.weekIdx);
+  track.setAttribute('aria-valuetext',
+    `${state.live ? 'Now' : 'Week beginning ' + w.start.toLocaleDateString('en-GB',{day:'numeric',month:'long'})} — ${nf(Math.round(state.total))} km, ${gbpFmt(state.gbp)}`);
+}
+
+function stopPlay(){
+  clearInterval(playTimer); playTimer = null;
+  $('tl-play').removeAttribute('data-on');
+  $('tl-play-i').setAttribute('d', 'M8 5.5v13l11-6.5z');
+}
+
+function togglePlay(){
+  if (playTimer) return stopPlay();
+  const n = state.weeks.length;
+  if (n < 2) return;
+  $('tl-play').setAttribute('data-on', '');
+  $('tl-play-i').setAttribute('d', 'M7 5.5h3.5v13H7zM13.5 5.5H17v13h-3.5z');   // pause
+  if (state.weekIdx >= n - 1) setWeek(0);
+  playTimer = setInterval(() => {
+    if (state.weekIdx >= n - 1) return stopPlay();
+    setWeek(state.weekIdx + 1);
+  }, CONFIG.timeline.playMs);
+}
+
+function initTimeline(){
+  const track = $('tl-track');
+  const idxAt = e => {
+    const r = track.getBoundingClientRect();
+    const t = tlHorizontal()
+      ? (e.clientX - r.left) / r.width
+      : 1 - (e.clientY - r.top) / r.height;
+    return Math.round(Math.min(1, Math.max(0, t)) * (state.weeks.length - 1));
+  };
+
+  let dragging = false;
+  const onDown = e => {
+    if (state.weeks.length < 2) return;
+    stopPlay(); dragging = true;
+    track.setPointerCapture?.(e.pointerId);
+    setWeek(idxAt(e), { scrubbing:true });
+    e.preventDefault();
+  };
+  const onMove = e => { if (dragging) setWeek(idxAt(e), { scrubbing:true }); };
+  const onUp   = e => {
+    if (!dragging) return;
+    dragging = false;
+    track.releasePointerCapture?.(e.pointerId);
+    render();                                   // settle with the animations back on
+  };
+
+  track.addEventListener('pointerdown', onDown);
+  track.addEventListener('pointermove', onMove);
+  track.addEventListener('pointerup', onUp);
+  track.addEventListener('pointercancel', onUp);
+  $('tl-handle').addEventListener('pointerdown', onDown);
+
+  track.addEventListener('keydown', e => {
+    const n = state.weeks.length; if (n < 2) return;
+    const jump = { ArrowUp:1, ArrowRight:1, ArrowDown:-1, ArrowLeft:-1, PageUp:4, PageDown:-4 }[e.key];
+    if (jump !== undefined){ stopPlay(); setWeek(state.weekIdx + jump); e.preventDefault(); }
+    else if (e.key === 'Home'){ stopPlay(); setWeek(0); e.preventDefault(); }
+    else if (e.key === 'End'){ stopPlay(); setWeek(n - 1); e.preventDefault(); }
+  });
+
+  $('tl-play').addEventListener('click', togglePlay);
+  $('tl-now').addEventListener('click', () => { stopPlay(); setWeek(state.weeks.length - 1); });
+  matchMedia('(max-width: 820px)').addEventListener('change', renderTimeline);
 }
 
 let firstPaint = true, wasComplete = false;
 function render(){
   renderDots(); updateHud();
-  renderStats(); renderLegs(); renderPeople(); renderActs(); renderFeed(); renderSource();
-  if (state.complete && CONFIG.finale.autoPlayWhenComplete && (firstPaint || !wasComplete))
+  renderStats(); renderLegs(); renderPeople(); renderActs(); renderFeed();
+  renderTimeline(); renderSource();
+  if (state.live && state.complete && CONFIG.finale.autoPlayWhenComplete && (firstPaint || !wasComplete))
     queueFinale(!firstPaint);
   wasComplete = state.complete;
   firstPaint = false;
@@ -1370,8 +1741,9 @@ async function playFinale(preview = false){
     ? 'A preview of the celebration that will greet every visitor the moment the trek reaches 1,000 km.'
     : 'The Great Garden Route Trek is complete. Thank you for walking every step with us.';
   countUp($('fin-n'), state.people.length);
-  countUp($('fin-s'), store.rows.length);
+  countUp($('fin-s'), Math.round(state.gbp), { pre:'\u00a3' });
   countUp($('fin-d'), ROUTE.legs.filter(l => l.pct >= 1).length);
+  $('fin-d-k').textContent = `of ${NLEGS} legs done`;
 
   if (reduced()){
     card.style.opacity = 1;
@@ -1419,8 +1791,10 @@ function entrance(){
 
 function initTheme(){
   const key = 'grct-theme';
+  /* Default to light regardless of the visitor's OS setting — only an
+     explicit toggle (saved below) switches this page to dark. */
   let saved = null; try { saved = localStorage.getItem(key); } catch {}
-  if (saved) document.documentElement.dataset.theme = saved || 'light';
+  document.documentElement.dataset.theme = saved || 'light';
   const apply = () => { readDimColour(); if (tiles) tiles.setUrl(tileUrl()); renderDots(); };
   $('theme').addEventListener('click', () => {
     const cur = document.documentElement.dataset.theme
@@ -1444,8 +1818,13 @@ window.GRCTTrek = {
   /** Re-pull from CONFIG.data.endpoint. */
   async refresh(){ applyRows(await loadRows()); return store.rows.length; },
   get state(){ return { totalKm:state.total, goalKm:GOAL, complete:state.complete,
-    trekkers:state.people.length, submissions:store.rows.length,
-    legs:ROUTE.legs.map(l => ({ from:l.from, to:l.to, km:l.km, doneKm:l.done, pct:l.pct })) }; },
+    trekkers:state.people.length, submissions:state.rows.length, submissionsTotal:store.rows.length,
+    gbp:state.gbp, goalGbp:GOALGBP, returnLeg:ROUTE.doubled,
+    week:state.live ? 'now' : ymd(state.weeks[state.weekIdx]?.start),
+    legs:ROUTE.legs.map(l => ({ from:l.from, to:l.to, km:l.km, doneKm:l.done, pct:l.pct, homeward:!!l.back })) }; },
+  /** Rewind the page to a week (0 = the first, or 'now'). */
+  setWeek(i){ stopPlay(); setWeek(i === 'now' ? state.weeks.length - 1 : i, { force:true }); return state.weekIdx; },
+  playWeeks: togglePlay,
   play: playFinale,
   /** Zoom the map to a kilometre range, e.g. GRCTTrek.zoomTo(0, 95). */
   zoomTo: fitKm,
@@ -1460,6 +1839,9 @@ window.GRCTTrek = {
   initMap();
   await boot();
   recompute();
+  state.weekIdx = Math.max(0, state.weeks.length - 1);
+  recompute();
+  initTimeline();
   render();
   entrance();
 
