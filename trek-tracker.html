@@ -705,8 +705,8 @@ const CONFIG = {
      *             form backend, a small API). Set `endpoint`.
      * 'live'    — a push feed. Implement connect() below and call `push`
      *             whenever new data arrives (SSE, WebSocket, Firebase…).      */
-    mode: 'inline',
-    endpoint: null,
+    mode: 'fetch',
+    endpoint: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQxhkqa9H4aPrHFZPtb7ti-97ZoGSZGMN4Xv2LSbbrfMFcCOKpabDHMNekP-LpCv1LXar-AEtjy0P9x/pub?output=csv',
     pollMs: 60000,          // 'fetch' mode; 0 = fetch once only
 
     /* Spreadsheets export dates in the sheet's own locale. A UK sheet writes
