@@ -68,6 +68,12 @@ it's worth filling in; undated entries are always counted, at every point on the
 
 ## When it gets automated
 
+**→ [`SPREADSHEET-SETUP.md`](SPREADSHEET-SETUP.md) is the step-by-step for wiring this to a
+Google Sheet**, which is the route to take unless there's a reason not to. Ten minutes, and
+from then on anyone who can edit the sheet updates the website.
+
+The short version:
+
 Change `CONFIG.data.mode` and nothing else:
 
 | mode | what it does |

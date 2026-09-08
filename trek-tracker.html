@@ -709,6 +709,12 @@ const CONFIG = {
     endpoint: null,
     pollMs: 60000,          // 'fetch' mode; 0 = fetch once only
 
+    /* Spreadsheets export dates in the sheet's own locale. A UK sheet writes
+       1 September as "01/09/2026", which JavaScript would otherwise read as
+       9 January. Leave true for a UK sheet; set false for an American one.
+       ISO dates (2026-09-01) are unambiguous and unaffected either way.    */
+    dayFirstDates: true,
+
     /* Map whatever your source returns onto the shape this page needs:
      *   { id, name, km, gbp, activity, date, note }
      * `gbp` is money raised — sign-up plus any sponsorship. A pure donation
@@ -1005,7 +1011,7 @@ function mondayOf(d){
   return x;
 }
 function buildWeeks(){
-  const ts = store.rows.map(r => r.date ? Date.parse(r.date) : NaN).filter(t => !isNaN(t));
+  const ts = store.rows.map(r => parseDate(r.date)).filter(t => !isNaN(t));
   if (!ts.length) return [];
   const first = mondayOf(new Date(Math.min(...ts)));
   const last  = Math.max(Math.max(...ts), Date.now());
@@ -1022,7 +1028,7 @@ function rowsUpTo(){
   const w = state.weeks[state.weekIdx];
   if (!w || state.live) return store.rows;
   return store.rows.filter(r => {
-    const t = r.date ? Date.parse(r.date) : NaN;
+    const t = parseDate(r.date);
     return isNaN(t) ? true : t < w.end;        // undated entries always count
   });
 }
@@ -1035,9 +1041,14 @@ function applyRows(rows, opts = {}){
 }
 
 function recompute(){
+  /* A new submission — or simply a new Monday — grows the track by a week.
+     If we were showing "now", keep showing now: otherwise the page would sit
+     on the old last week and quietly stop displaying anything newer. Someone
+     who has deliberately wound back stays where they put it. */
+  const wasLive = state.live;
   state.weeks = CONFIG.timeline.enabled ? buildWeeks() : [];
   const lastWeek = Math.max(0, state.weeks.length - 1);
-  if (state.weekIdx > lastWeek) state.weekIdx = lastWeek;
+  if (wasLive || state.weekIdx > lastWeek) state.weekIdx = lastWeek;
   state.live = !state.weeks.length || state.weekIdx >= lastWeek;
 
   const rows = state.rows = rowsUpTo();
@@ -1364,7 +1375,33 @@ function setHighlight(name, skipLegend){
  *  TOOLTIP
  * ========================================================================= */
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const fmtDate = s => { if (!s) return '—'; const d = new Date(s);
+/* Read a date the way the spreadsheet meant it. JavaScript's own parser is
+   US-first, so "01/09/2026" from a UK sheet would come back as 9 January —
+   eight months adrift, which would put the entry in the wrong week of the
+   timeline. ISO (2026-09-01) is unambiguous and always taken at face value. */
+function parseDate(v){
+  if (v == null || v === '') return NaN;
+  if (v instanceof Date) return v.getTime();
+  const str = String(v).trim();
+  if (!str) return NaN;
+
+  let m = str.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);            // ISO
+  if (m) return new Date(+m[1], +m[2] - 1, +m[3]).getTime();
+
+  m = str.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})$/); // 1/9/2026
+  if (m){
+    let d = +m[1], mo = +m[2], y = +m[3];
+    if (!CONFIG.data.dayFirstDates){ d = +m[2]; mo = +m[1]; }
+    if (mo > 12 && d <= 12){ const t = d; d = mo; mo = t; }       // unambiguous the other way
+    if (y < 100) y += 2000;
+    if (mo < 1 || mo > 12 || d < 1 || d > 31) return NaN;
+    return new Date(y, mo - 1, d).getTime();
+  }
+  const t = Date.parse(str);                                      // "1 Sept 2026", ISO datetime
+  return isNaN(t) ? NaN : t;
+}
+
+const fmtDate = s => { if (!s) return '—'; const d = new Date(parseDate(s));
   return isNaN(d) ? s : d.toLocaleDateString('en-GB', { day:'numeric', month:'short' }); };
 const kmLabel = (a, b) => {
   const dp = (b - a) < 1 ? 2 : (b - a) < 10 ? 1 : 0;
@@ -1566,6 +1603,10 @@ function setWeek(idx, opts = {}){
   const next = Math.max(0, Math.min(n - 1, idx));
   if (next === state.weekIdx && !opts.force) return;
   state.weekIdx = next;
+  /* Declare the intent before recompute() runs: it uses state.live to decide
+     whether to follow a newly-added week, and picking a week by hand must not
+     read as "was live, so jump to the end". */
+  state.live = next >= n - 1;
   scrubbing = !!opts.scrubbing;
   recompute();
   render();
