@@ -114,6 +114,13 @@ h1,h2,h3,h4{font-family:var(--font-head);margin:0;letter-spacing:-0.01em}
 .mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
 .eyebrow{font-family:var(--font-mono);font-size:10.5px;font-weight:500;letter-spacing:.13em;text-transform:uppercase;color:var(--muted-foreground)}
 
+/* ---- ?embed=1 : hide our own site chrome when this page sits in an iframe
+   on grct.org.uk, so their header and footer aren't duplicated ---- */
+:root[data-embed] .topbar,
+:root[data-embed] header.site,
+:root[data-embed] footer.site{display:none}
+:root[data-embed] .hero{padding-top:24px}
+
 .topbar{height:4px;background:linear-gradient(90deg,var(--grct-green-deep),var(--grct-green) 45%,var(--grct-orange))}
 header.site{border-bottom:1px solid var(--border);background:var(--card);position:sticky;top:0;z-index:600}
 .hdr{display:flex;align-items:center;gap:16px;height:64px}
@@ -393,6 +400,12 @@ footer.site{border-top:1px solid var(--border);background:var(--card);padding:26
   *{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
 }
 </style>
+<script>
+  /* Runs before first paint: ?embed=1 drops the header and footer for iframe
+     use, so the tracker sits inside an existing page without duplicating it. */
+  try { if (new URLSearchParams(location.search).has('embed'))
+          document.documentElement.setAttribute('data-embed', ''); } catch (e) {}
+</script>
 </head>
 <body>
 
@@ -802,24 +815,34 @@ const CONFIG = {
  * ========================================================================= */
 const store = { rows: [], updatedAt: null, mode: CONFIG.data.mode, teardown: null };
 
+/* Parsed character by character rather than line by line, because a real
+   spreadsheet export is not a toy CSV: a note typed with a line break in it
+   stays inside its quotes and must not become a new record. Also strips the
+   UTF-8 BOM Google Sheets prefixes, and tolerates CRLF and blank rows. */
 function parseCSV(text){
-  const lines = text.replace(/\r/g,'').split('\n').filter(l => l.trim());
-  if (!lines.length) return [];
-  const split = l => {
-    const out = []; let cur = '', q = false;
-    for (let i = 0; i < l.length; i++){
-      const c = l[i];
-      if (c === '"'){ if (q && l[i+1] === '"'){ cur += '"'; i++; } else q = !q; }
-      else if (c === ',' && !q){ out.push(cur); cur = ''; }
-      else cur += c;
+  const s = text.replace(/^\ufeff/, '').replace(/\r\n?/g, '\n');
+  const rows = [];
+  let row = [], cur = '', quoted = false;
+
+  for (let i = 0; i < s.length; i++){
+    const c = s[i];
+    if (quoted){
+      if (c === '"'){
+        if (s[i+1] === '"'){ cur += '"'; i++; } else quoted = false;
+      } else cur += c;
     }
-    out.push(cur); return out;
-  };
-  const head = split(lines[0]).map(h => h.trim());
-  return lines.slice(1).map(l => {
-    const cells = split(l);
-    return Object.fromEntries(head.map((h, i) => [h, (cells[i] ?? '').trim()]));
-  });
+    else if (c === '"') quoted = true;
+    else if (c === ','){ row.push(cur); cur = ''; }
+    else if (c === '\n'){ row.push(cur); rows.push(row); row = []; cur = ''; }
+    else cur += c;
+  }
+  if (cur !== '' || row.length){ row.push(cur); rows.push(row); }
+
+  const filled = rows.filter(r => r.some(c => c.trim()));
+  if (!filled.length) return [];
+  const head = filled[0].map(h => h.trim());
+  return filled.slice(1).map(r =>
+    Object.fromEntries(head.map((h, i) => [h, (r[i] ?? '').trim()])));
 }
 
 async function loadRows(){

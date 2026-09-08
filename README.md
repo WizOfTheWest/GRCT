@@ -73,7 +73,7 @@ Change `CONFIG.data.mode` and nothing else:
 | mode | what it does |
 |---|---|
 | `inline` | the list in this file (the default) |
-| `fetch` | polls `CONFIG.data.endpoint` every `pollMs` — JSON or CSV, including a published Google Sheet |
+| `fetch` | polls `CONFIG.data.endpoint` every `pollMs` — JSON or CSV, including a published Google Sheet (Google serves those with permissive CORS, so the browser can read one directly) |
 | `live` | a push feed; implement `CONFIG.data.connect(push)` for SSE, WebSocket, Firebase, Supabase… |
 
 `CONFIG.data.normalise()` maps whatever shape your source returns onto
@@ -98,6 +98,20 @@ earliest date to whichever is later of the last submission and today. Nothing to
 the track simply grows a notch each week as the autumn goes on, and thins its tick marks out
 once there are more than 26. Rewinding never triggers the finish celebration, and the numbers
 stop animating while you drag so scrubbing stays responsive.
+
+## Putting it on the GRCT website
+
+The file is a complete page, so the simplest route is to upload it and link to it. To place
+it inside an existing page instead, add `?embed=1` — that hides this page's own header,
+footer and top rule so the site's own chrome isn't duplicated:
+
+```html
+<iframe src="/trek-tracker.html?embed=1" title="Great Garden Route Trek tracker"
+        style="width:100%;height:2500px;border:0" loading="lazy"></iframe>
+```
+
+The iframe needs a fixed height (there is no auto-resize yet — say the word and it's a small
+addition). Nothing else is needed: no plugin, no server-side code, no API keys.
 
 ## Notes
 
